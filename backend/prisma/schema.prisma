@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  BUSINESS_OWNER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  businesses    Business[]
+}
+
+model Business {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  logo          String?
+  ownerId       String
+  owner         User        @relation(fields: [ownerId], references: [id])
+  promotions    Promotion[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Promotion {
+  id            String      @id @default(uuid())
+  title         String
+  description   String
+  startDate     DateTime
+  endDate       DateTime
+  businessId    String
+  business      Business    @relation(fields: [businessId], references: [id])
+  banners       Banner[]
+  analytics     Analytics[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Banner {
+  id            String    @id @default(uuid())
+  imageUrl      String
+  promotionId   String
+  promotion     Promotion @relation(fields: [promotionId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Analytics {
+  id            String    @id @default(uuid())
+  views         Int       @default(0)
+  clicks        Int       @default(0)
+  promotionId   String
+  promotion     Promotion @relation(fields: [promotionId], references: [id])
+  recordedAt    DateTime  @default(now())
+}
