@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, User, Bell, LayoutDashboard, Megaphone, BarChart3, Trophy, ChevronDown } from "lucide-react";
+import { Menu, User, Bell, LayoutDashboard, Megaphone, BarChart3, Trophy, ChevronDown, Home } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MobileDrawer } from "./mobile-drawer";
@@ -13,6 +13,14 @@ export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
     const pathname = usePathname();
+    const isDashboardPath = pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/onboarding') ||
+        pathname.startsWith('/promotion-requests') ||
+        pathname.startsWith('/analytics') ||
+        pathname.startsWith('/businesses') ||
+        pathname.startsWith('/my-banners') ||
+        pathname.startsWith('/leaderboard') ||
+        pathname.startsWith('/settings');
 
     useEffect(() => {
         const handleScroll = () => {
@@ -29,13 +37,15 @@ export function Navbar() {
     ];
 
     const privateLinks = [
+        { name: "Home", href: "/", icon: Home },
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Promotions", href: "/promotions", icon: Megaphone },
-        { name: "Analytics", href: "/analytics", icon: BarChart3 },
-        { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
+        { name: "Find Businesses", href: "/businesses" },
+        { name: "Requests", href: "/promotion-requests" },
     ];
 
-    const navigation = isLoggedIn ? privateLinks : publicLinks;
+    // Show private UI if explicitly logged in via demo tool OR on a dashboard path
+    const showPrivateUI = isLoggedIn || isDashboardPath;
+    const navigation = showPrivateUI ? privateLinks : publicLinks;
 
     return (
         <>
@@ -43,7 +53,7 @@ export function Navbar() {
                 className={cn(
                     "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
                     "h-[72px] flex items-center px-4 md:px-8 mx-auto",
-                    "bg-white/70 backdrop-blur-md border-b border-white/40 shadow-lg rounded-b-2xl",
+                    "bg-white border-b border-slate-200 shadow-sm",
                     isScrolled ? "translate-y-0 opacity-100" : "translate-y-0"
                 )}
             >
@@ -76,10 +86,11 @@ export function Navbar() {
                                         key={item.name}
                                         href={item.href}
                                         className={cn(
-                                            "text-[15px] font-medium transition-all duration-300 relative py-2 group",
+                                            "text-[15px] font-medium transition-all duration-300 relative py-2 group flex items-center gap-2",
                                             isActive ? "text-[#2563EB]" : "text-[#1E293B] hover:text-[#2563EB]"
                                         )}
                                     >
+                                        {'icon' in item && item.icon && <item.icon className="w-4 h-4" />}
                                         {item.name}
 
                                         {/* Underline Animation */}
@@ -96,7 +107,7 @@ export function Navbar() {
 
                         {/* RIGHT: Auth & Tools */}
                         <div className="flex items-center gap-4 md:gap-6">
-                            {!isLoggedIn ? (
+                            {!showPrivateUI ? (
                                 <div className="hidden md:flex items-center gap-8">
                                     <Link
                                         href="/login"
@@ -144,9 +155,10 @@ export function Navbar() {
                             {/* DEMO TOOL */}
                             <button
                                 onClick={() => setIsLoggedIn(!isLoggedIn)}
-                                className="text-[9px] text-slate-400 hover:text-[#2563EB] transition-colors border border-dashed border-slate-200 px-1.5 py-0.5 rounded-md"
+                                suppressHydrationWarning={true}
+                                className="text-[9px] text-slate-400 hover:text-blue-500 transition-colors border border-dashed border-slate-200 px-1.5 py-0.5 rounded-md hidden md:block"
                             >
-                                {isLoggedIn ? 'LOGOUT' : 'LOGIN'}
+                                {showPrivateUI ? 'LOGOUT' : 'LOGIN'}
                             </button>
                         </div>
                     </div>

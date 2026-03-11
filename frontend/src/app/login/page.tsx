@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthLayout } from "@/components/auth-layout";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,6 +11,11 @@ type AuthMode = "password" | "otp";
 export default function LoginPage() {
     const [authMode, setAuthMode] = useState<AuthMode>("password");
     const [otpStep, setOtpStep] = useState(1); // 1 = Email, 2 = Code
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -46,12 +51,14 @@ export default function LoginPage() {
             <div className="mb-6 flex p-1 bg-[#F0F6FF] rounded-xl">
                 <button
                     onClick={() => { setAuthMode("password"); setOtpStep(1); }}
+                    suppressHydrationWarning={true}
                     className={`flex-1 py-2 text-[14px] font-semibold rounded-lg transition-all ${authMode === "password" ? "bg-white text-[#1E73E8] shadow-sm" : "text-[#64748B] hover:text-[#111111]"}`}
                 >
                     Password
                 </button>
                 <button
                     onClick={() => setAuthMode("otp")}
+                    suppressHydrationWarning={true}
                     className={`flex-1 py-2 text-[14px] font-semibold rounded-lg transition-all ${authMode === "otp" ? "bg-white text-[#1E73E8] shadow-sm" : "text-[#64748B] hover:text-[#111111]"}`}
                 >
                     OTP
@@ -107,7 +114,8 @@ export default function LoginPage() {
                                 whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
                                 whileTap={{ scale: 0.99 }}
                                 type="submit"
-                                className="w-full h-[50px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[14px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                suppressHydrationWarning={true}
+                                className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
                             >
                                 Login to Dashboard
                             </motion.button>
@@ -137,7 +145,8 @@ export default function LoginPage() {
                                         whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
                                         whileTap={{ scale: 0.99 }}
                                         type="submit"
-                                        className="w-full h-[50px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[14px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                        suppressHydrationWarning={true}
+                                        className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
                                     >
                                         Send OTP
                                     </motion.button>
@@ -148,6 +157,7 @@ export default function LoginPage() {
                                         <button
                                             type="button"
                                             onClick={() => setOtpStep(1)}
+                                            suppressHydrationWarning={true}
                                             className="text-[#1E73E8] hover:bg-[#F0F6FF] p-1 rounded-lg transition-all"
                                         >
                                             <ArrowLeft className="w-4 h-4" />
@@ -167,17 +177,25 @@ export default function LoginPage() {
                                                 required
                                             />
                                         </div>
+                                        <p className="mt-1.5 ml-1 text-[12px] text-[#555555]">
+                                            Code expires in 2 minutes.
+                                        </p>
                                     </div>
                                     <motion.button
                                         whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
                                         whileTap={{ scale: 0.99 }}
                                         type="submit"
-                                        className="w-full h-[50px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[14px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                        suppressHydrationWarning={true}
+                                        className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
                                     >
                                         Verify & Login
                                     </motion.button>
                                     <div className="text-center">
-                                        <button type="button" className="text-[13px] text-[#1E73E8] font-medium hover:underline">
+                                        <button
+                                            type="button"
+                                            suppressHydrationWarning={true}
+                                            className="text-[13px] font-medium text-[#1E73E8] hover:underline"
+                                        >
                                             Resend Code
                                         </button>
                                     </div>
@@ -197,11 +215,24 @@ export default function LoginPage() {
                 </p>
             </div>
 
-            <div className="mt-8 flex items-center justify-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <div className="mt-8 flex flex-col items-center gap-4">
+                <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 rounded-full bg-green-500/10 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    </div>
+                    <p className="text-[12px] font-medium text-[#64748B]">Secure login. Your data is protected.</p>
                 </div>
-                <p className="text-[12px] font-medium text-[#64748B]">Secure login. Your data is protected.</p>
+
+                {/* Dev Bypass Button */}
+                {isMounted && (
+                    <Link
+                        href="/profile-setup"
+                        suppressHydrationWarning={true}
+                        className="text-[10px] uppercase tracking-wider font-bold text-slate-400 hover:text-[#1E73E8] transition-colors border border-dashed border-slate-200 hover:border-[#1E73E8]/30 px-3 py-1.5 rounded-lg"
+                    >
+                        Dev Bypass: Profile Setup
+                    </Link>
+                )}
             </div>
         </AuthLayout>
     );

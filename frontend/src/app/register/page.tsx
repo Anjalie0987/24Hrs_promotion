@@ -84,6 +84,9 @@ export default function SignupPage() {
                             onChange={handleChange}
                             required
                         />
+                        <p className="mt-1.5 ml-1 text-[12px] text-[#555555]">
+                            Minimum 8 characters required.
+                        </p>
                     </div>
                     <div>
                         <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Confirm Password</label>
@@ -112,14 +115,19 @@ export default function SignupPage() {
                     </label>
                 </div>
 
-                <motion.button
-                    whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
-                    whileTap={{ scale: 0.99 }}
-                    type="submit"
-                    className="w-full h-[50px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] hover:from-[#1E73E8] hover:to-[#0F5FCC] text-white font-bold rounded-[14px] shadow-lg shadow-blue-500/20 transition-all duration-300 mt-2"
-                >
-                    Create Free Account
-                </motion.button>
+                <div className="pt-2">
+                    <motion.button
+                        whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
+                        whileTap={{ scale: 0.99 }}
+                        type="submit"
+                        className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] hover:from-[#1E73E8] hover:to-[#0F5FCC] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                    >
+                        Create Free Account
+                    </motion.button>
+                    <p className="mt-3 text-center text-[13px] text-[#555555]">
+                        Free to join. No credit card required.
+                    </p>
+                </div>
             </form>
 
             <div className="text-center mt-6">

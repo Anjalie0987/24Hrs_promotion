@@ -22,10 +22,10 @@ const benefits = [
 
 export function AuthLayout({ children, title, subtitle, description }: AuthLayoutProps) {
     return (
-        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#F6F9FF]">
+        <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#F8FAFF]">
 
             {/* Left Side: Side Panel (Desktop Only) */}
-            <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-gradient-to-br from-[#F0F6FF] to-[#E6F1FF] relative overflow-hidden">
+            <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-[#F0F6FF] relative overflow-hidden">
                 {/* Background Decorative Shapes */}
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#1E73E8]/5 blur-[120px] rounded-full" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#2FA7F5]/5 blur-[120px] rounded-full" />
@@ -92,7 +92,7 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="w-full max-w-[460px] bg-white rounded-[24px] shadow-xl shadow-blue-900/5 p-8 sm:p-10 border border-[#E6F0FF]/50"
+                    className="w-full max-w-[420px] bg-white rounded-[20px] shadow-xl shadow-blue-900/5 p-9 border border-[#E5E7EB]"
                 >
                     <div className="mb-8">
                         <h1 className="text-[28px] sm:text-[32px] font-bold text-[#111111] leading-tight mb-3">

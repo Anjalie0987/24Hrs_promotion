@@ -18,10 +18,11 @@ export default function DashboardLayout({
     // For now, let's assume all authenticated paths show the sidebar
     // In a real app, this would be based on auth state + path
     const isDashboardPath = pathname.startsWith('/dashboard') ||
-        pathname.startsWith('/promotions') ||
+        pathname.startsWith('/promotion-requests') ||
         pathname.startsWith('/analytics') ||
         pathname.startsWith('/businesses') ||
-        pathname.startsWith('/banners') ||
+        pathname.startsWith('/my-banners') ||
+        pathname.startsWith('/promotion/') ||
         pathname.startsWith('/leaderboard') ||
         pathname.startsWith('/settings');
 
@@ -41,7 +42,7 @@ export default function DashboardLayout({
                     "flex-1 transition-all duration-300 ease-in-out",
                     isDashboardPath ? "md:pl-64" : ""
                 )}>
-                    <div className="container mx-auto p-4 md:p-8 pt-[152px] max-w-7xl">
+                    <div className="container mx-auto p-4 md:p-8 pt-[110px] md:pt-[130px] max-w-7xl">
                         {children}
                     </div>
                 </main>
