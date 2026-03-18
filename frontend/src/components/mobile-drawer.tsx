@@ -9,9 +9,10 @@ interface MobileDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     isLoggedIn: boolean;
+    onLogout: () => void;
 }
 
-export function MobileDrawer({ isOpen, onClose, isLoggedIn }: MobileDrawerProps) {
+export function MobileDrawer({ isOpen, onClose, isLoggedIn, onLogout }: MobileDrawerProps) {
     const publicLinks = [
         { name: "Home", href: "/", icon: Home },
         { name: "How It Works", href: "#how-it-works", icon: Info },
@@ -105,7 +106,10 @@ export function MobileDrawer({ isOpen, onClose, isLoggedIn }: MobileDrawerProps)
                                     </>
                                 ) : (
                                     <button
-                                        onClick={() => {/* Mock logout */ }}
+                                        onClick={() => {
+                                            onLogout();
+                                            onClose();
+                                        }}
                                         className="w-full py-3 rounded-xl font-medium text-error hover:bg-error/5 transition-colors border border-dashed border-error/20"
                                     >
                                         Log Out

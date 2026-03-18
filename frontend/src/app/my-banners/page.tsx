@@ -57,6 +57,8 @@ const initialBanners = [
     }
 ];
 
+import ProtectedRoute from "@/components/protected-route";
+
 export default function MyBannersPage() {
     const [banners, setBanners] = useState(initialBanners);
     const [showDeactivateModal, setShowDeactivateModal] = useState<number | null>(null);
@@ -75,7 +77,8 @@ export default function MyBannersPage() {
     };
 
     return (
-        <div className="space-y-8 pb-20">
+        <ProtectedRoute>
+            <div className="space-y-8 pb-20">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -270,6 +273,7 @@ export default function MyBannersPage() {
                     </div>
                 )}
             </AnimatePresence>
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 }

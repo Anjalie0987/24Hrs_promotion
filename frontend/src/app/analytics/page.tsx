@@ -92,6 +92,8 @@ const historyMock = [
     { id: 5, date: "2024-03-01", business: "Style & Co", banner: "Winter Clearance", clicks: 95, scans: 70, status: "Completed" },
 ];
 
+import ProtectedRoute from "@/components/protected-route";
+
 export default function AnalyticsPage() {
     const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("7d");
     const [activeBanners, setActiveBanners] = useState(topBannersMock);
@@ -104,7 +106,8 @@ export default function AnalyticsPage() {
     ];
 
     return (
-        <div className="space-y-10 pb-20">
+        <ProtectedRoute>
+            <div className="space-y-10 pb-20">
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Promotion Analytics</h1>
@@ -379,6 +382,7 @@ export default function AnalyticsPage() {
                     </Link>
                 </div>
             )}
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 }

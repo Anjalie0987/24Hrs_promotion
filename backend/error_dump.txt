@@ -1,0 +1,49 @@
+[31m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use :::3001[39m[38;5;3m +8ms[39m
+node:net:1940
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use :::3001
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at ExpressAdapter.listen (C:\Users\anjal\24Hrs_Promotion\backend\node_modules\@nestjs\platform-express\adapters\express-adapter.js:127:32)
+    at C:\Users\anjal\24Hrs_Promotion\backend\node_modules\@nestjs\core\nest-application.js:188:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (C:\Users\anjal\24Hrs_Promotion\backend\node_modules\@nestjs\core\nest-application.js:178:16)
+    at async bootstrap (C:\Users\anjal\24Hrs_Promotion\backend\src\main.ts:39:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3001
+}
+
+Node.js v22.20.0
+
+
+STDOUT:
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +57ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBusinessesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPromotionsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBannersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAnalyticsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +180ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +7ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/signup, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBusinessesController {/api/businesses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPromotionsController {/api/promotions}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBannersController {/api/banners}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAnalyticsController {/api/analytics}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17432  - [39m18/03/2026, 11:45:35 am [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +205ms[39m

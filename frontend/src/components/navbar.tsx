@@ -2,17 +2,28 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, User, Bell, LayoutDashboard, Megaphone, BarChart3, Trophy, ChevronDown, Home } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { Menu, User, Bell, LayoutDashboard, Megaphone, BarChart3, Trophy, ChevronDown, Home, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MobileDrawer } from "./mobile-drawer";
+import { LucideIcon } from "lucide-react";
+
+interface NavItem {
+    name: string;
+    href: string;
+    icon?: LucideIcon;
+}
+
+import { useAuth } from "@/context/auth-context";
 
 export function Navbar() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const { user, logout, isAuthenticated, loading } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
-    const pathname = usePathname();
+    
     const isDashboardPath = pathname.startsWith('/dashboard') ||
         pathname.startsWith('/onboarding') ||
         pathname.startsWith('/promotion-requests') ||
@@ -27,25 +38,34 @@ export function Navbar() {
             setIsScrolled(window.scrollY > 10);
         };
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
-    const publicLinks = [
+    const handleLogout = () => {
+        logout();
+        router.push("/login");
+    };
+
+    const publicLinks: NavItem[] = [
         { name: "Home", href: "/" },
         { name: "How It Works", href: "#how-it-works" },
         { name: "Pricing", href: "#pricing" },
     ];
 
-    const privateLinks = [
+    const privateLinks: NavItem[] = [
         { name: "Home", href: "/", icon: Home },
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Find Businesses", href: "/businesses" },
         { name: "Requests", href: "/promotion-requests" },
     ];
 
-    // Show private UI if explicitly logged in via demo tool OR on a dashboard path
-    const showPrivateUI = isLoggedIn || isDashboardPath;
+    // Show private UI if logged in OR on a dashboard path
+    const showPrivateUI = isAuthenticated || isDashboardPath;
     const navigation = showPrivateUI ? privateLinks : publicLinks;
+
+    const userInitial = user?.firstName?.charAt(0).toUpperCase() || "U";
 
     return (
         <>
@@ -61,7 +81,7 @@ export function Navbar() {
                     <div className="flex items-center justify-between gap-4">
                         {/* LEFT: Logo Only */}
                         <Link
-                            href={isLoggedIn ? "/dashboard" : "/"}
+                            href="/"
                             className="flex items-center group shrink-0"
                         >
                             <motion.div
@@ -80,18 +100,19 @@ export function Navbar() {
                         {/* CENTER: Navigation Links */}
                         <div className="hidden md:flex items-center gap-10">
                             {navigation.map((item) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={cn(
-                                            "text-[15px] font-medium transition-all duration-300 relative py-2 group flex items-center gap-2",
-                                            isActive ? "text-[#2563EB]" : "text-[#1E293B] hover:text-[#2563EB]"
-                                        )}
-                                    >
-                                        {'icon' in item && item.icon && <item.icon className="w-4 h-4" />}
-                                        {item.name}
+                                        const isActive = pathname === item.href;
+                                        const Icon = item.icon;
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                className={cn(
+                                                    "text-[15px] font-medium transition-all duration-300 relative py-2 group flex items-center gap-2",
+                                                    isActive ? "text-[#2563EB]" : "text-[#1E293B] hover:text-[#2563EB]"
+                                                )}
+                                            >
+                                                {Icon && <Icon className="w-4 h-4" />}
+                                                {item.name}
 
                                         {/* Underline Animation */}
                                         <span
@@ -107,7 +128,9 @@ export function Navbar() {
 
                         {/* RIGHT: Auth & Tools */}
                         <div className="flex items-center gap-4 md:gap-6">
-                            {!showPrivateUI ? (
+                            {loading ? (
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 animate-pulse" />
+                            ) : !isAuthenticated ? (
                                 <div className="hidden md:flex items-center gap-8">
                                     <Link
                                         href="/login"
@@ -135,12 +158,27 @@ export function Navbar() {
                                         <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-white/70" />
                                     </button>
                                     <div className="h-6 w-[1px] bg-slate-200/50 mx-1 hidden sm:block" />
-                                    <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/50 transition-colors border border-white/40">
-                                        <div className="h-8 w-8 rounded-lg bg-brand-accent/10 flex items-center justify-center border border-brand-accent/20 text-brand-primary font-bold shadow-sm">
-                                            A
+                                    <div className="relative group/user">
+                                        <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/50 transition-colors border border-white/40">
+                                            <div className="h-8 w-8 rounded-lg bg-brand-accent/10 flex items-center justify-center border border-brand-accent/20 text-brand-primary font-bold shadow-sm">
+                                                {userInitial}
+                                            </div>
+                                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                                        </button>
+                                        
+                                        {/* Dropdown Menu */}
+                                        <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover/user:opacity-100 group-hover/user:visible transition-all duration-200">
+                                            <div className="w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden">
+                                                <button 
+                                                    onClick={handleLogout}
+                                                    className="w-full px-4 py-3 flex items-center gap-3 text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    <span className="text-sm font-semibold">Logout</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <ChevronDown className="h-4 w-4 text-slate-400" />
-                                    </button>
+                                    </div>
                                 </div>
                             )}
 
@@ -151,15 +189,6 @@ export function Navbar() {
                             >
                                 <Menu className="h-6 w-6 text-slate-600" />
                             </button>
-
-                            {/* DEMO TOOL */}
-                            <button
-                                onClick={() => setIsLoggedIn(!isLoggedIn)}
-                                suppressHydrationWarning={true}
-                                className="text-[9px] text-slate-400 hover:text-blue-500 transition-colors border border-dashed border-slate-200 px-1.5 py-0.5 rounded-md hidden md:block"
-                            >
-                                {showPrivateUI ? 'LOGOUT' : 'LOGIN'}
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -168,7 +197,8 @@ export function Navbar() {
             <MobileDrawer
                 isOpen={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
-                isLoggedIn={isLoggedIn}
+                isLoggedIn={isAuthenticated}
+                onLogout={handleLogout}
             />
 
             {/* Navbar Spacer is managed by layout padding-top */}

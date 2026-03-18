@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: "Next-gen promotion management for businesses",
 };
 
+import { AuthProvider } from "@/context/auth-context";
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,7 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
-        <DashboardLayout>{children}</DashboardLayout>
+        <AuthProvider>
+          <Toaster position="top-center" />
+          <DashboardLayout>{children}</DashboardLayout>
+        </AuthProvider>
       </body>
     </html>
   );

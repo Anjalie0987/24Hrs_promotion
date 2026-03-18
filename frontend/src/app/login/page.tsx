@@ -2,20 +2,32 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AuthLayout } from "@/components/auth-layout";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Mail, Lock, ArrowLeft, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Phone, ArrowLeft, ShieldCheck } from "lucide-react";
+import { AuthLayout } from "@/components/auth-layout";
+import api from "@/api/api";
+import { useAuth } from "@/context/auth-context";
+import { toast } from "react-hot-toast";
 
 type AuthMode = "password" | "otp";
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { login } = useAuth();
+    const searchParams = useSearchParams();
+    const signupSuccess = searchParams.get("signup") === "success";
+    
     const [authMode, setAuthMode] = useState<AuthMode>("password");
-    const [otpStep, setOtpStep] = useState(1); // 1 = Email, 2 = Code
+    const [otpStep, setOtpStep] = useState(1); 
     const [isMounted, setIsMounted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -24,20 +36,41 @@ export default function LoginPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        setError(null);
     };
 
     const handleModeToggle = () => {
         setAuthMode(prev => prev === "password" ? "otp" : "password");
         setOtpStep(1);
+        setError(null);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError(null);
+
         if (authMode === "otp" && otpStep === 1) {
             setOtpStep(2);
             return;
         }
-        console.log("Login attempt:", { authMode, formData });
+
+        setIsLoading(true);
+        try {
+            const response = await api.post('/auth/login', {
+                email: formData.email,
+                password: formData.password,
+            });
+
+            login(response.data.access_token, response.data.user);
+            toast.success("Welcome back!");
+            router.push("/dashboard");
+        } catch (err: any) {
+            const msg = err.response?.data?.message || "Invalid email or password";
+            setError(msg);
+            toast.error(msg);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const inputClasses = "w-full h-12 pl-11 pr-4 rounded-[12px] border border-[#E6F0FF] text-[#111111] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#1E73E8]/20 focus:border-[#1E73E8] transition-all bg-white placeholder-[#94A3B8]";
@@ -65,6 +98,18 @@ export default function LoginPage() {
                 </button>
             </div>
 
+            {signupSuccess && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-100 rounded-xl text-green-600 text-[14px] font-medium animate-in fade-in slide-in-from-top-2 duration-300">
+                    Account created successfully! Please login to continue.
+                </div>
+            )}
+
+            {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-[14px] font-medium animate-in fade-in slide-in-from-top-2 duration-300">
+                    {error}
+                </div>
+            )}
+
             <AnimatePresence mode="wait">
                 <motion.form
                     key={authMode + (authMode === "otp" ? otpStep : "")}
@@ -88,6 +133,7 @@ export default function LoginPage() {
                                         className={inputClasses}
                                         onChange={handleChange}
                                         required
+                                        disabled={isLoading}
                                     />
                                 </div>
                             </div>
@@ -107,17 +153,23 @@ export default function LoginPage() {
                                         className={inputClasses}
                                         onChange={handleChange}
                                         required
+                                        disabled={isLoading}
                                     />
                                 </div>
                             </div>
                             <motion.button
-                                whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
-                                whileTap={{ scale: 0.99 }}
+                                whileHover={!isLoading ? { scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" } : {}}
+                                whileTap={!isLoading ? { scale: 0.99 } : {}}
                                 type="submit"
                                 suppressHydrationWarning={true}
-                                className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                disabled={isLoading}
+                                className={`w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300 flex items-center justify-center ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
-                                Login to Dashboard
+                                {isLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    "Login to Dashboard"
+                                )}
                             </motion.button>
                         </>
                     ) : (
@@ -135,6 +187,7 @@ export default function LoginPage() {
                                                 className={inputClasses}
                                                 onChange={handleChange}
                                                 required
+                                                disabled={isLoading}
                                             />
                                         </div>
                                     </div>
@@ -142,13 +195,18 @@ export default function LoginPage() {
                                         We’ll send a one-time verification code.
                                     </p>
                                     <motion.button
-                                        whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
-                                        whileTap={{ scale: 0.99 }}
+                                        whileHover={!isLoading ? { scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" } : {}}
+                                        whileTap={!isLoading ? { scale: 0.99 } : {}}
                                         type="submit"
                                         suppressHydrationWarning={true}
-                                        className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                        disabled={isLoading}
+                                        className={`w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300 flex items-center justify-center ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                                     >
-                                        Send OTP
+                                        {isLoading ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            "Send OTP"
+                                        )}
                                     </motion.button>
                                 </>
                             ) : (
@@ -158,6 +216,7 @@ export default function LoginPage() {
                                             type="button"
                                             onClick={() => setOtpStep(1)}
                                             suppressHydrationWarning={true}
+                                            disabled={isLoading}
                                             className="text-[#1E73E8] hover:bg-[#F0F6FF] p-1 rounded-lg transition-all"
                                         >
                                             <ArrowLeft className="w-4 h-4" />
@@ -175,6 +234,7 @@ export default function LoginPage() {
                                                 className={inputClasses}
                                                 onChange={handleChange}
                                                 required
+                                                disabled={isLoading}
                                             />
                                         </div>
                                         <p className="mt-1.5 ml-1 text-[12px] text-[#555555]">
@@ -182,13 +242,18 @@ export default function LoginPage() {
                                         </p>
                                     </div>
                                     <motion.button
-                                        whileHover={{ scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" }}
-                                        whileTap={{ scale: 0.99 }}
+                                        whileHover={!isLoading ? { scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" } : {}}
+                                        whileTap={!isLoading ? { scale: 0.99 } : {}}
                                         type="submit"
                                         suppressHydrationWarning={true}
-                                        className="w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300"
+                                        disabled={isLoading}
+                                        className={`w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300 flex items-center justify-center ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                                     >
-                                        Verify & Login
+                                        {isLoading ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            "Verify & Login"
+                                        )}
                                     </motion.button>
                                     <div className="text-center">
                                         <button
@@ -222,17 +287,6 @@ export default function LoginPage() {
                     </div>
                     <p className="text-[12px] font-medium text-[#64748B]">Secure login. Your data is protected.</p>
                 </div>
-
-                {/* Dev Bypass Button */}
-                {isMounted && (
-                    <Link
-                        href="/profile-setup"
-                        suppressHydrationWarning={true}
-                        className="text-[10px] uppercase tracking-wider font-bold text-slate-400 hover:text-[#1E73E8] transition-colors border border-dashed border-slate-200 hover:border-[#1E73E8]/30 px-3 py-1.5 rounded-lg"
-                    >
-                        Dev Bypass: Profile Setup
-                    </Link>
-                )}
             </div>
         </AuthLayout>
     );

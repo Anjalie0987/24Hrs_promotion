@@ -25,6 +25,8 @@ import {
     Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProtectedRoute from "@/components/protected-route";
+import { useAuth } from "@/context/auth-context";
 
 // Mock Data
 const stats = [
@@ -60,15 +62,44 @@ const myBanners = [
 ];
 
 export default function DashboardPage() {
-    const [hasActivePromotion, setHasActivePromotion] = useState(true); // Toggle for demo
+    const { user } = useAuth();
+    const [hasActivePromotion, setHasActivePromotion] = useState(false);
+    
+    // Check if user has completed their business profile
+    const hasBusiness = user?.businesses && user.businesses.length > 0;
+    const business = hasBusiness ? user.businesses[0] : null;
+
+    if (!hasBusiness) {
+        return (
+            <ProtectedRoute>
+                <div className="min-h-[70vh] flex flex-col items-center justify-center text-center p-6 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                    <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                        <Store className="w-10 h-10 text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Welcome to 24-Hr Promotion!</h2>
+                    <p className="text-slate-500 max-w-md mb-8">
+                        You're almost there. To start promoting and getting featured, you need to set up your business profile first.
+                    </p>
+                    <Link
+                        href="/profile-setup"
+                        className="px-8 py-4 bg-[#2563EB] text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 flex items-center gap-3"
+                    >
+                        <span>Complete Profile Setup</span>
+                        <ArrowRight className="w-5 h-5" />
+                    </Link>
+                </div>
+            </ProtectedRoute>
+        );
+    }
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col gap-1">
-                <h1 className="text-3xl font-bold tracking-tight text-[#0F172A]">Dashboard</h1>
-                <p className="text-[#64748B]">Manage your promotions, banners, and collaborations from one place.</p>
-            </div>
+        <ProtectedRoute>
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-bold tracking-tight text-[#0F172A]">Welcome, {user?.firstName || 'Business Owner'}!</h1>
+                    <p className="text-[#64748B]">Here's how {business?.name || 'your business'} is performing today.</p>
+                </div>
 
             {/* Promotion Status Card */}
             <section>
@@ -362,5 +393,6 @@ export default function DashboardPage() {
                 </div>
             </div>
         </div>
+        </ProtectedRoute>
     );
 }

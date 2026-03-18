@@ -5,12 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -20,57 +20,91 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  firstName     String?
-  lastName      String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  businesses    Business[]
+  id         String     @id @default(uuid())
+  email      String     @unique
+  password   String
+  firstName  String?
+  lastName   String?
+  role       Role       @default(USER)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  businesses Business[]
 }
 
 model Business {
-  id            String      @id @default(uuid())
-  name          String
-  description   String?
-  logo          String?
-  ownerId       String
-  owner         User        @relation(fields: [ownerId], references: [id])
-  promotions    Promotion[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  logo        String?
+  ownerId     String
+  trustScore  Int     @default(50)
+
+  owner User @relation(fields: [ownerId], references: [id])
+
+  promotions Promotion[]
+
+  sentRequests     PromotionRequest[] @relation("SenderBusiness")
+  receivedRequests PromotionRequest[] @relation("ReceiverBusiness")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Promotion {
-  id            String      @id @default(uuid())
-  title         String
-  description   String
-  startDate     DateTime
-  endDate       DateTime
-  businessId    String
-  business      Business    @relation(fields: [businessId], references: [id])
-  banners       Banner[]
-  analytics     Analytics[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              String           @id @default(uuid())
+  title           String
+  description     String
+  startDate       DateTime
+  endDate         DateTime
+  businessId      String
+  business        Business         @relation(fields: [businessId], references: [id])
+  banners         Banner[]
+  analytics       Analytics[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  promotionProofs PromotionProof[]
+}
+
+model PromotionRequest {
+  id                 String @id @default(uuid())
+  senderBusinessId   String
+  receiverBusinessId String
+  bannerId           String
+  status             String @default("pending")
+
+  senderBusiness   Business @relation("SenderBusiness", fields: [senderBusinessId], references: [id])
+  receiverBusiness Business @relation("ReceiverBusiness", fields: [receiverBusinessId], references: [id])
+  banner           Banner   @relation(fields: [bannerId], references: [id])
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model PromotionProof {
+  id          String @id @default(uuid())
+  promotionId String
+  imageUrl    String
+
+  promotion Promotion @relation(fields: [promotionId], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 model Banner {
-  id            String    @id @default(uuid())
-  imageUrl      String
-  promotionId   String
-  promotion     Promotion @relation(fields: [promotionId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String             @id @default(uuid())
+  imageUrl          String
+  promotionId       String
+  promotion         Promotion          @relation(fields: [promotionId], references: [id])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  promotionRequests PromotionRequest[]
 }
 
 model Analytics {
-  id            String    @id @default(uuid())
-  views         Int       @default(0)
-  clicks        Int       @default(0)
-  promotionId   String
-  promotion     Promotion @relation(fields: [promotionId], references: [id])
-  recordedAt    DateTime  @default(now())
+  id          String    @id @default(uuid())
+  views       Int       @default(0)
+  clicks      Int       @default(0)
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  recordedAt  DateTime  @default(now())
 }

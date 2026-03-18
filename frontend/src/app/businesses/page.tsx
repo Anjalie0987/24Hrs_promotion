@@ -87,6 +87,8 @@ const businesses = [
     }
 ];
 
+import ProtectedRoute from "@/components/protected-route";
+
 export default function FindBusinesses() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -106,7 +108,8 @@ export default function FindBusinesses() {
     };
 
     return (
-        <div className="space-y-8 pb-12">
+        <ProtectedRoute>
+            <div className="space-y-8 pb-12">
             {/* Page Header */}
             <div>
                 <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Find Businesses to Promote</h1>
@@ -292,6 +295,7 @@ export default function FindBusinesses() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 }

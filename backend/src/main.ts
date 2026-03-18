@@ -1,15 +1,19 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security
   app.use(helmet());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
   app.enableCors();
   app.use(
     rateLimit({
