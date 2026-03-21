@@ -8,21 +8,6 @@ export declare class RequestsService {
         receiverBusinessId: string;
         bannerId: string;
     }): Promise<{
-        receiverBusiness: {
-            id: string;
-            createdAt: Date;
-            name: string;
-            category: string;
-            description: string | null;
-            location: string | null;
-            instagram: string | null;
-            whatsapp: string | null;
-            logoUrl: string | null;
-            bannerUrl: string | null;
-            trustScore: number;
-            userId: string;
-            updatedAt: Date;
-        };
         banner: {
             id: string;
             createdAt: Date;
@@ -31,46 +16,78 @@ export declare class RequestsService {
             title: string | null;
             businessId: string;
         };
+        receiverBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            description: string | null;
+            trustScore: number;
+            userId: string;
+        };
     } & {
         id: string;
-        status: string;
         createdAt: Date;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     accept(id: string, businessId: string): Promise<{
         id: string;
-        status: string;
         createdAt: Date;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     reject(id: string, businessId: string): Promise<{
         id: string;
-        status: string;
         createdAt: Date;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     findIncoming(businessId: string): Promise<({
+        banner: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            imageUrl: string;
+            title: string | null;
+            businessId: string;
+        };
         senderBusiness: {
             id: string;
             createdAt: Date;
+            updatedAt: Date;
             name: string;
             category: string;
-            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            description: string | null;
             trustScore: number;
             userId: string;
-            updatedAt: Date;
         };
+    } & {
+        id: string;
+        createdAt: Date;
+        senderBusinessId: string;
+        receiverBusinessId: string;
+        bannerId: string;
+        status: string;
+    })[]>;
+    findSent(businessId: string): Promise<({
         banner: {
             id: string;
             createdAt: Date;
@@ -79,44 +96,27 @@ export declare class RequestsService {
             title: string | null;
             businessId: string;
         };
-    } & {
-        id: string;
-        status: string;
-        createdAt: Date;
-        senderBusinessId: string;
-        receiverBusinessId: string;
-        bannerId: string;
-    })[]>;
-    findSent(businessId: string): Promise<({
         receiverBusiness: {
             id: string;
             createdAt: Date;
+            updatedAt: Date;
             name: string;
             category: string;
-            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            description: string | null;
             trustScore: number;
             userId: string;
-            updatedAt: Date;
-        };
-        banner: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            imageUrl: string;
-            title: string | null;
-            businessId: string;
         };
     } & {
         id: string;
-        status: string;
         createdAt: Date;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     })[]>;
 }

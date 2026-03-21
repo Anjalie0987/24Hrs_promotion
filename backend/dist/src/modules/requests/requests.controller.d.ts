@@ -18,42 +18,42 @@ export declare class RequestsController {
         };
         receiverBusiness: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
             category: string;
-            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            description: string | null;
             trustScore: number;
-            createdAt: Date;
-            updatedAt: Date;
             userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        status: string;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     accept(req: any, id: string): Promise<{
         id: string;
         createdAt: Date;
-        status: string;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     reject(req: any, id: string): Promise<{
         id: string;
         createdAt: Date;
-        status: string;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     }>;
     findIncoming(req: any): Promise<({
         banner: {
@@ -66,26 +66,26 @@ export declare class RequestsController {
         };
         senderBusiness: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
             category: string;
-            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            description: string | null;
             trustScore: number;
-            createdAt: Date;
-            updatedAt: Date;
             userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        status: string;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     })[]>;
     findSent(req: any): Promise<({
         banner: {
@@ -98,25 +98,25 @@ export declare class RequestsController {
         };
         receiverBusiness: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
             category: string;
-            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            description: string | null;
             trustScore: number;
-            createdAt: Date;
-            updatedAt: Date;
             userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        status: string;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
+        status: string;
     })[]>;
 }

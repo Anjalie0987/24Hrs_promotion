@@ -29,17 +29,20 @@ let BusinessController = class BusinessController {
     async findMe(req) {
         return this.businessService.findMe(req.user.userId);
     }
-    async findOne(id) {
-        return this.businessService.findOne(id);
-    }
     async update(req, dto) {
         return this.businessService.update(req.user.userId, dto);
     }
     async getRecommended(req) {
         return this.businessService.getRecommended(req.user.userId);
     }
+    async findAllAlias(req, query) {
+        return this.businessService.findAll(req.user.userId, query);
+    }
     async findAll(req, query) {
         return this.businessService.findAll(req.user.userId, query);
+    }
+    async findOne(id) {
+        return this.businessService.findOne(id);
     }
 };
 exports.BusinessController = BusinessController;
@@ -61,13 +64,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "findMe", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], BusinessController.prototype, "findOne", null);
-__decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Put)('update'),
     __param(0, (0, common_1.Req)()),
@@ -86,6 +82,15 @@ __decorate([
 ], BusinessController.prototype, "getRecommended", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('all'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "findAllAlias", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)()),
@@ -93,6 +98,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "findOne", null);
 exports.BusinessController = BusinessController = __decorate([
     (0, common_1.Controller)('business'),
     __metadata("design:paramtypes", [business_service_1.BusinessService])

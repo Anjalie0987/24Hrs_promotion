@@ -16,51 +16,51 @@ export declare class PromotionsController {
             };
             senderBusiness: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 name: string;
                 category: string;
-                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                description: string | null;
                 trustScore: number;
-                createdAt: Date;
-                updatedAt: Date;
                 userId: string;
             };
             receiverBusiness: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 name: string;
                 category: string;
-                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                description: string | null;
                 trustScore: number;
-                createdAt: Date;
-                updatedAt: Date;
                 userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
-            status: string;
             senderBusinessId: string;
             receiverBusinessId: string;
             bannerId: string;
+            status: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        requestId: string;
+        status: string;
         startTime: Date;
         endTime: Date;
-        status: string;
         senderProof: string | null;
         receiverProof: string | null;
+        requestId: string;
     })[]>;
     findAll(req: any): Promise<({
         request: {
@@ -74,51 +74,51 @@ export declare class PromotionsController {
             };
             senderBusiness: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 name: string;
                 category: string;
-                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                description: string | null;
                 trustScore: number;
-                createdAt: Date;
-                updatedAt: Date;
                 userId: string;
             };
             receiverBusiness: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 name: string;
                 category: string;
-                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                description: string | null;
                 trustScore: number;
-                createdAt: Date;
-                updatedAt: Date;
                 userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
-            status: string;
             senderBusinessId: string;
             receiverBusinessId: string;
             bannerId: string;
+            status: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        requestId: string;
+        status: string;
         startTime: Date;
         endTime: Date;
-        status: string;
         senderProof: string | null;
         receiverProof: string | null;
+        requestId: string;
     })[]>;
     uploadProof(req: any, dto: {
         promotionId: string;
@@ -126,11 +126,11 @@ export declare class PromotionsController {
     }): Promise<{
         id: string;
         createdAt: Date;
-        requestId: string;
+        status: string;
         startTime: Date;
         endTime: Date;
-        status: string;
         senderProof: string | null;
         receiverProof: string | null;
+        requestId: string;
     }>;
 }

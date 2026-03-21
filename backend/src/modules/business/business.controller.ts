@@ -20,11 +20,6 @@ export class BusinessController {
     return this.businessService.findMe(req.user.userId);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.businessService.findOne(id);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Put('update')
   async update(@Req() req: any, @Body() dto: UpdateBusinessDto) {
@@ -38,11 +33,25 @@ export class BusinessController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('all') // Added alias for better discovery
+  async findAllAlias(
+    @Req() req: any,
+    @Query() query: { search?: string; category?: string; location?: string }
+  ) {
+    return this.businessService.findAll(req.user.userId, query);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(
     @Req() req: any,
     @Query() query: { search?: string; category?: string; location?: string }
   ) {
     return this.businessService.findAll(req.user.userId, query);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.businessService.findOne(id);
   }
 }
