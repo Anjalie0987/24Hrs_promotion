@@ -39,8 +39,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // We don't automatically login on mount to respect the user's wish
-    // for a clean home page entry every time.
+    const savedToken = localStorage.getItem('access_token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (savedToken && savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+        // Optionally fetch fresh user data from API
+        fetchUser();
+      } catch (error) {
+        console.error("Failed to parse saved user", error);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
+      }
+    }
     setLoading(false);
   }, []);
 

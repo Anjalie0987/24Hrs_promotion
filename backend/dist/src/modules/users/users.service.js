@@ -21,13 +21,9 @@ let UsersService = class UsersService {
         const user = await this.prisma.user.findUnique({
             where: { id },
             include: {
-                businesses: {
+                business: {
                     include: {
-                        promotions: {
-                            include: {
-                                banners: true,
-                            },
-                        },
+                        banners: true,
                     },
                 },
             },
@@ -39,14 +35,14 @@ let UsersService = class UsersService {
         return result;
     }
     async updateProfile(id, data) {
-        const { firstName, lastName, businessName, businessDescription, bannerUrl } = data;
+        const { firstName, lastName, businessName, businessDescription, category, location, instagram, whatsapp, logo, logoUrl, bannerUrl } = data;
         await this.prisma.user.update({
             where: { id },
             data: { firstName, lastName },
         });
         if (businessName) {
             const existingBusiness = await this.prisma.business.findFirst({
-                where: { ownerId: id },
+                where: { userId: id },
             });
             if (existingBusiness) {
                 await this.prisma.business.update({
@@ -54,22 +50,27 @@ let UsersService = class UsersService {
                     data: {
                         name: businessName,
                         description: businessDescription,
+                        category: category || existingBusiness.category,
+                        location: location || existingBusiness.location,
+                        instagram: instagram || existingBusiness.instagram,
+                        whatsapp: whatsapp || existingBusiness.whatsapp,
+                        logoUrl: logo || logoUrl || existingBusiness.logoUrl,
+                        bannerUrl: bannerUrl || existingBusiness.bannerUrl,
                     },
                 });
-                if (bannerUrl) {
-                    await this.prisma.business.update({
-                        where: { id: existingBusiness.id },
-                        data: { logo: bannerUrl },
-                    });
-                }
             }
             else {
                 await this.prisma.business.create({
                     data: {
                         name: businessName,
                         description: businessDescription,
-                        logo: bannerUrl,
-                        ownerId: id,
+                        category: category || 'Other',
+                        location,
+                        instagram,
+                        whatsapp,
+                        logoUrl: logo || logoUrl,
+                        bannerUrl,
+                        userId: id,
                     },
                 });
             }

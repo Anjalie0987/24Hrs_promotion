@@ -28,83 +28,75 @@ model User {
   role       Role       @default(USER)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  businesses Business[]
+  business   Business?
 }
 
 model Business {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
+  category    String
   description String?
-  logo        String?
-  ownerId     String
-  trustScore  Int     @default(50)
+  location    String?
+  instagram   String?
+  whatsapp    String?
+  logoUrl     String?
+  bannerUrl   String?
+  trustScore  Int      @default(50)
 
-  owner User @relation(fields: [ownerId], references: [id])
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
 
-  promotions Promotion[]
+  banners    Banner[]
 
-  sentRequests     PromotionRequest[] @relation("SenderBusiness")
-  receivedRequests PromotionRequest[] @relation("ReceiverBusiness")
+  sentRequests     PromotionRequest[] @relation("Sender")
+  receivedRequests PromotionRequest[] @relation("Receiver")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Promotion {
-  id              String           @id @default(uuid())
-  title           String
-  description     String
-  startDate       DateTime
-  endDate         DateTime
-  businessId      String
-  business        Business         @relation(fields: [businessId], references: [id])
-  banners         Banner[]
-  analytics       Analytics[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  promotionProofs PromotionProof[]
+  id            String   @id @default(uuid())
+
+  requestId     String   @unique
+  request       PromotionRequest @relation(fields: [requestId], references: [id])
+
+  startTime     DateTime
+  endTime       DateTime
+
+  status        String   @default("ACTIVE") // ACTIVE, COMPLETED, EXPIRED
+
+  senderProof   String?
+  receiverProof String?
+
+  createdAt     DateTime @default(now())
 }
 
 model PromotionRequest {
-  id                 String @id @default(uuid())
-  senderBusinessId   String
-  receiverBusinessId String
-  bannerId           String
-  status             String @default("pending")
+  id                  String   @id @default(uuid())
+  senderBusinessId    String
+  receiverBusinessId  String
+  bannerId            String
+  status              String   @default("PENDING")
+  createdAt           DateTime @default(now())
 
-  senderBusiness   Business @relation("SenderBusiness", fields: [senderBusinessId], references: [id])
-  receiverBusiness Business @relation("ReceiverBusiness", fields: [receiverBusinessId], references: [id])
-  banner           Banner   @relation(fields: [bannerId], references: [id])
-
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-}
-
-model PromotionProof {
-  id          String @id @default(uuid())
-  promotionId String
-  imageUrl    String
-
-  promotion Promotion @relation(fields: [promotionId], references: [id])
-
-  createdAt DateTime @default(now())
+  senderBusiness      Business @relation("Sender", fields: [senderBusinessId], references: [id])
+  receiverBusiness    Business @relation("Receiver", fields: [receiverBusinessId], references: [id])
+  banner              Banner   @relation(fields: [bannerId], references: [id])
+  
+  promotion           Promotion?
 }
 
 model Banner {
-  id                String             @id @default(uuid())
-  imageUrl          String
-  promotionId       String
-  promotion         Promotion          @relation(fields: [promotionId], references: [id])
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  promotionRequests PromotionRequest[]
-}
+  id         String   @id @default(uuid())
+  imageUrl   String
+  title      String?
 
-model Analytics {
-  id          String    @id @default(uuid())
-  views       Int       @default(0)
-  clicks      Int       @default(0)
-  promotionId String
-  promotion   Promotion @relation(fields: [promotionId], references: [id])
-  recordedAt  DateTime  @default(now())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+
+  promotionRequests PromotionRequest[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

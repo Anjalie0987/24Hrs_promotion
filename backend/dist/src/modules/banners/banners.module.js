@@ -10,11 +10,14 @@ exports.BannersModule = void 0;
 const common_1 = require("@nestjs/common");
 const banners_controller_1 = require("./banners.controller");
 const banners_service_1 = require("./banners.service");
+const prisma_module_1 = require("../prisma/prisma.module");
+const business_module_1 = require("../business/business.module");
 let BannersModule = class BannersModule {
 };
 exports.BannersModule = BannersModule;
 exports.BannersModule = BannersModule = __decorate([
     (0, common_1.Module)({
+        imports: [prisma_module_1.PrismaModule, business_module_1.BusinessModule],
         controllers: [banners_controller_1.BannersController],
         providers: [banners_service_1.BannersService]
     })

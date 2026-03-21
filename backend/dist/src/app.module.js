@@ -13,10 +13,12 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./modules/auth/auth.module");
 const users_module_1 = require("./modules/users/users.module");
-const businesses_module_1 = require("./modules/businesses/businesses.module");
+const business_module_1 = require("./modules/business/business.module");
 const promotions_module_1 = require("./modules/promotions/promotions.module");
 const banners_module_1 = require("./modules/banners/banners.module");
 const analytics_module_1 = require("./modules/analytics/analytics.module");
+const requests_module_1 = require("./modules/requests/requests.module");
+const schedule_1 = require("@nestjs/schedule");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,10 +28,12 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
-            businesses_module_1.BusinessesModule,
+            business_module_1.BusinessModule,
             promotions_module_1.PromotionsModule,
             banners_module_1.BannersModule,
-            analytics_module_1.AnalyticsModule
+            analytics_module_1.AnalyticsModule,
+            requests_module_1.RequestsModule,
+            schedule_1.ScheduleModule.forRoot()
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

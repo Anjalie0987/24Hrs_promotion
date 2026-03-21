@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const adapter_pg_1 = require("@prisma/adapter-pg");
 const pg_1 = require("pg");
+require("dotenv/config");
 let PrismaService = class PrismaService extends client_1.PrismaClient {
     constructor() {
         const pool = new pg_1.Pool({

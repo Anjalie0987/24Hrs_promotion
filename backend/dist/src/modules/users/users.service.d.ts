@@ -3,35 +3,30 @@ export declare class UsersService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     findOne(id: string): Promise<{
-        businesses: ({
-            promotions: ({
-                banners: {
-                    id: string;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    imageUrl: string;
-                    promotionId: string;
-                }[];
-            } & {
+        business: ({
+            banners: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                description: string;
-                title: string;
-                startDate: Date;
-                endDate: Date;
+                imageUrl: string;
+                title: string | null;
                 businessId: string;
-            })[];
+            }[];
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            category: string;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
             description: string | null;
-            logo: string | null;
-            ownerId: string;
             trustScore: number;
-        })[];
+            userId: string;
+        }) | null;
         id: string;
         email: string;
         firstName: string | null;
@@ -41,35 +36,30 @@ export declare class UsersService {
         updatedAt: Date;
     }>;
     updateProfile(id: string, data: any): Promise<{
-        businesses: ({
-            promotions: ({
-                banners: {
-                    id: string;
-                    createdAt: Date;
-                    updatedAt: Date;
-                    imageUrl: string;
-                    promotionId: string;
-                }[];
-            } & {
+        business: ({
+            banners: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                description: string;
-                title: string;
-                startDate: Date;
-                endDate: Date;
+                imageUrl: string;
+                title: string | null;
                 businessId: string;
-            })[];
+            }[];
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            category: string;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
             description: string | null;
-            logo: string | null;
-            ownerId: string;
             trustScore: number;
-        })[];
+            userId: string;
+        }) | null;
         id: string;
         email: string;
         firstName: string | null;

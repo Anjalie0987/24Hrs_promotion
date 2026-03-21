@@ -37,7 +37,8 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                             alt="24HR Status Promotion"
                             width={56}
                             height={56}
-                            className="rounded-xl shadow-lg"
+                            className="rounded-xl shadow-lg h-auto"
+                            style={{ width: '56px' }}
                         />
                     </Link>
 
@@ -74,6 +75,7 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                             width={440}
                             height={300}
                             className="w-full h-auto object-cover opacity-90"
+                            style={{ height: 'auto' }}
                         />
                     </motion.div>
                 </div>
@@ -84,7 +86,14 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                 {/* Mobile Logo Only */}
                 <div className="lg:hidden mb-8">
                     <Link href="/">
-                        <Image src="/24HR_logo.jpg" alt="Logo" width={48} height={48} className="rounded-lg shadow-sm" />
+                        <Image 
+                            src="/24HR_logo.jpg" 
+                            alt="Logo" 
+                            width={48} 
+                            height={48} 
+                            className="rounded-lg shadow-sm h-auto" 
+                            style={{ width: '48px' }}
+                        />
                     </Link>
                 </div>
 

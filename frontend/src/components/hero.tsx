@@ -1,13 +1,41 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getMyBusiness } from "@/api/business.api";
 
 export function Hero() {
     const { isAuthenticated } = useAuth();
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCTAClick = async () => {
+        if (!isAuthenticated) {
+            router.push("/register");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const business = await getMyBusiness();
+            if (business && business.id) {
+                router.push("/dashboard");
+            } else {
+                router.push("/profile-setup");
+            }
+        } catch (error) {
+            console.error("Error checking business state:", error);
+            // Fallback to profile-setup if API fails but user is authenticated
+            router.push("/profile-setup");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <section className="relative min-h-[80vh] flex items-center bg-[#F9FBFF] overflow-hidden pt-12 md:pt-0">
             {/* Subtle Background Elements */}
@@ -37,15 +65,22 @@ export function Hero() {
                         </p>
 
                         <div className="mt-10 flex flex-wrap gap-6 items-center">
-                            <Link href="/register">
-                                <motion.button
-                                    whileHover={{ scale: 1.03, boxShadow: "0 10px 25px -5px rgba(30, 115, 232, 0.3)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="px-8 py-4 rounded-[14px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-semibold shadow-lg shadow-blue-500/10 transition-all border border-white/10"
-                                >
-                                    Start Free Promotion
-                                </motion.button>
-                            </Link>
+                            <motion.button
+                                whileHover={!isLoading ? { scale: 1.03, boxShadow: "0 10px 25px -5px rgba(30, 115, 232, 0.3)" } : {}}
+                                whileTap={!isLoading ? { scale: 0.98 } : {}}
+                                onClick={handleCTAClick}
+                                disabled={isLoading}
+                                className={`px-8 py-4 rounded-[14px] bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-semibold shadow-lg shadow-blue-500/10 transition-all border border-white/10 flex items-center gap-2 ${isLoading ? 'opacity-80 cursor-not-allowed' : ''}`}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Checking...
+                                    </>
+                                ) : (
+                                    "Start Free Promotion"
+                                )}
+                            </motion.button>
                         </div>
                     </motion.div>
 
