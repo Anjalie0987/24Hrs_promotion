@@ -5,15 +5,19 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, loading } = useAuth();
+    const { user, isAuthenticated, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            router.push(`/login?redirect=${pathname}`);
+        if (!loading) {
+            if (!isAuthenticated) {
+                router.push(`/login?redirect=${pathname}`);
+            } else if (user && !user.business && !pathname.startsWith("/profile-setup")) {
+                router.push("/profile-setup");
+            }
         }
-    }, [isAuthenticated, loading, router, pathname]);
+    }, [isAuthenticated, loading, router, pathname, user]);
 
     if (loading) {
         return (

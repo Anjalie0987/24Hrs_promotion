@@ -25,24 +25,28 @@ let RequestsController = class RequestsController {
         this.businessService = businessService;
     }
     async send(req, data) {
-        const business = await this.businessService.findMe(req.user.id);
+        const business = await this.businessService.findMe(req.user.userId);
         return this.requestsService.send(business.id, data);
     }
     async accept(req, id) {
-        const business = await this.businessService.findMe(req.user.id);
+        const business = await this.businessService.findMe(req.user.userId);
         return this.requestsService.accept(id, business.id);
     }
     async reject(req, id) {
-        const business = await this.businessService.findMe(req.user.id);
+        const business = await this.businessService.findMe(req.user.userId);
         return this.requestsService.reject(id, business.id);
     }
-    async findIncoming(req) {
-        const business = await this.businessService.findMe(req.user.id);
-        return this.requestsService.findIncoming(business.id);
+    async cancel(req, id) {
+        const business = await this.businessService.findMe(req.user.userId);
+        return this.requestsService.cancel(id, business.id);
     }
-    async findSent(req) {
-        const business = await this.businessService.findMe(req.user.id);
-        return this.requestsService.findSent(business.id);
+    async findIncoming(req, skip, take) {
+        const business = await this.businessService.findMe(req.user.userId);
+        return this.requestsService.findIncoming(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
+    }
+    async findSent(req, skip, take) {
+        const business = await this.businessService.findMe(req.user.userId);
+        return this.requestsService.findSent(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
     }
 };
 exports.RequestsController = RequestsController;
@@ -71,17 +75,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RequestsController.prototype, "reject", null);
 __decorate([
+    (0, common_1.Delete)('cancel/:id'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], RequestsController.prototype, "cancel", null);
+__decorate([
     (0, common_1.Get)('incoming'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('skip')),
+    __param(2, (0, common_1.Query)('take')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], RequestsController.prototype, "findIncoming", null);
 __decorate([
     (0, common_1.Get)('sent'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('skip')),
+    __param(2, (0, common_1.Query)('take')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], RequestsController.prototype, "findSent", null);
 exports.RequestsController = RequestsController = __decorate([

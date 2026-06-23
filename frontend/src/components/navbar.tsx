@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MobileDrawer } from "./mobile-drawer";
 import { LucideIcon } from "lucide-react";
+import { NotificationBell } from "./NotificationBell";
+import { UserDropdown } from "./user-dropdown";
 
 interface NavItem {
     name: string;
@@ -153,32 +155,9 @@ export function Navbar() {
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-4">
-                                    <button className="p-2 rounded-full hover:bg-white/50 text-slate-600 transition-colors relative">
-                                        <Bell className="h-5 w-5" />
-                                        <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-white/70" />
-                                    </button>
+                                    <NotificationBell />
                                     <div className="h-6 w-[1px] bg-slate-200/50 mx-1 hidden sm:block" />
-                                    <div className="relative group/user">
-                                        <button className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/50 transition-colors border border-white/40">
-                                            <div className="h-8 w-8 rounded-lg bg-brand-accent/10 flex items-center justify-center border border-brand-accent/20 text-brand-primary font-bold shadow-sm">
-                                                {userInitial}
-                                            </div>
-                                            <ChevronDown className="h-4 w-4 text-slate-400" />
-                                        </button>
-                                        
-                                        {/* Dropdown Menu */}
-                                        <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover/user:opacity-100 group-hover/user:visible transition-all duration-200">
-                                            <div className="w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden">
-                                                <button 
-                                                    onClick={handleLogout}
-                                                    className="w-full px-4 py-3 flex items-center gap-3 text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
-                                                >
-                                                    <LogOut className="w-4 h-4" />
-                                                    <span className="text-sm font-semibold">Logout</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <UserDropdown />
                                 </div>
                             )}
 

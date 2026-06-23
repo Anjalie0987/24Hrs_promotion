@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Linkedin, Twitter } from "lucide-react";
+// import { Instagram, Linkedin, Twitter } from "lucide-react";
 
 export function Footer() {
     const currentYear = new Date().getFullYear();
@@ -8,7 +8,7 @@ export function Footer() {
     return (
         <footer className="bg-gray-50 border-t border-gray-200 pt-16 pb-8">
             <div className="container mx-auto px-4 md:px-8 max-w-[1200px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
 
                     {/* Column 1 - Brand */}
                     <div className="lg:col-span-1">
@@ -33,11 +33,9 @@ export function Footer() {
                         <ul className="space-y-3">
                             {[
                                 { name: "Home", href: "/" },
-                                { name: "How It Works", href: "#how-it-works" },
-                                { name: "Why Choose Us", href: "#why-choose-us" },
-                                { name: "For Businesses", href: "#for-businesses" },
-                                { name: "Pricing (Coming Soon)", href: "#" },
-                                { name: "Dashboard (Login)", href: "/login" },
+                                { name: "Login", href: "/login" },
+                                { name: "Sign Up", href: "/register" },
+                                { name: "Forgot Password", href: "/forgot-password" },
                             ].map((link) => (
                                 <li key={link.name}>
                                     <Link
@@ -56,72 +54,51 @@ export function Footer() {
                         <h4 className="text-[16px] font-semibold text-[#0F172A] mb-6">Platform</h4>
                         <ul className="space-y-3">
                             {[
-                                "Upload Your Banner",
-                                "Promotion Requests",
-                                "Mutual Approval System",
-                                "Analytics Dashboard",
-                                "Trust Score System",
-                                "Leaderboard",
-                            ].map((item) => (
-                                <li key={item}>
+                                { name: "Dashboard", href: "/dashboard" },
+                                { name: "Businesses", href: "/businesses" },
+                                { name: "Promotion Requests", href: "/promotion-requests" },
+                                { name: "My Banners", href: "/my-banners" },
+                                { name: "Analytics", href: "/analytics" },
+                                { name: "Saved Partners", href: "/saved-partners" },
+                            ].map((link) => (
+                                <li key={link.name}>
                                     <Link
-                                        href="#"
+                                        href={link.href}
                                         className="text-[14px] text-[#475569] hover:text-[#2563EB] transition-colors duration-200"
                                     >
-                                        {item}
+                                        {link.name}
                                     </Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Column 4 - Legal */}
-                    <div>
-                        <h4 className="text-[16px] font-semibold text-[#0F172A] mb-6">Legal</h4>
-                        <ul className="space-y-3">
-                            {[
-                                "Terms & Conditions",
-                                "Privacy Policy",
-                                "Refund Policy",
-                                "Disclaimer",
-                                "Cookie Policy",
-                            ].map((item) => (
-                                <li key={item}>
-                                    <Link
-                                        href="#"
-                                        className="text-[14px] text-[#475569] hover:text-[#2563EB] transition-colors duration-200"
-                                    >
-                                        {item}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Column 5 - Contact */}
+                    {/* Column 4 - Contact */}
                     <div>
                         <h4 className="text-[16px] font-semibold text-[#0F172A] mb-6">Contact Us</h4>
                         <div className="space-y-4 mb-8">
                             <div>
                                 <p className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Support Email</p>
                                 <a
-                                    href="mailto:support@24hrstatuspromotion.com"
+                                    href="mailto:admin24promotion@gmail.com"
                                     className="text-[14px] text-[#475569] hover:text-[#2563EB] transition-colors break-all"
                                 >
-                                    support@24hrstatuspromotion.com
+                                    admin24promotion@gmail.com
                                 </a>
                             </div>
                             <div>
                                 <p className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-wider mb-1">Business Inquiries</p>
                                 <a
-                                    href="mailto:business@24hrstatuspromotion.com"
+                                    href="mailto:admin24promotion@gmail.com"
                                     className="text-[14px] text-[#475569] hover:text-[#2563EB] transition-colors break-all"
                                 >
-                                    business@24hrstatuspromotion.com
+                                    admin24promotion@gmail.com
                                 </a>
                             </div>
                         </div>
 
+                        {/* Social Media Links - Commented out as requested */}
+                        {/* 
                         <div className="flex items-center gap-4">
                             {[
                                 { icon: Instagram, href: "#" },
@@ -137,6 +114,7 @@ export function Footer() {
                                 </Link>
                             ))}
                         </div>
+                        */}
                     </div>
                 </div>
 

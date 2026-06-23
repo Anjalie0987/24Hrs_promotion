@@ -20,8 +20,6 @@ const navigation = [
     { name: "Promotion Requests", href: "/promotion-requests", icon: Megaphone },
     { name: "My Banners", href: "/my-banners", icon: ImageIcon },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
-    { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface SidebarProps {
@@ -96,13 +94,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </nav>
                 </div>
 
-                <div className="absolute bottom-8 left-0 w-full px-6">
-                    <div className="p-4 rounded-xl bg-brand-gradient text-white shadow-lg overflow-hidden relative">
-                        <div className="relative z-10 text-sm font-semibold mb-1">Upgrade to Pro</div>
-                        <div className="relative z-10 text-xs text-white/80">Get advanced analytics & more</div>
-                        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-white/10 rounded-full blur-xl" />
-                    </div>
-                </div>
+
             </aside>
         </>
     );

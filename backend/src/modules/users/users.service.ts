@@ -26,7 +26,19 @@ export class UsersService {
   }
 
   async updateProfile(id: string, data: any) {
-    const { firstName, lastName, businessName, businessDescription, category, location, instagram, whatsapp, logo, logoUrl, bannerUrl } = data;
+    const {
+      firstName,
+      lastName,
+      businessName,
+      businessDescription,
+      category,
+      location,
+      instagram,
+      whatsapp,
+      logo,
+      logoUrl,
+      bannerUrl,
+    } = data;
 
     // Update user names
     await this.prisma.user.update({

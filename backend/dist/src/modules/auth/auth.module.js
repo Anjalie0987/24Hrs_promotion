@@ -15,6 +15,8 @@ const prisma_module_1 = require("../prisma/prisma.module");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
+const email_module_1 = require("../email/email.module");
+const cleanup_service_1 = require("./cleanup.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -32,9 +34,10 @@ exports.AuthModule = AuthModule = __decorate([
                     signOptions: { expiresIn: '1d' },
                 }),
             }),
+            email_module_1.EmailModule,
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy]
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, cleanup_service_1.CleanupService],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

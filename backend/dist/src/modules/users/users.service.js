@@ -35,7 +35,7 @@ let UsersService = class UsersService {
         return result;
     }
     async updateProfile(id, data) {
-        const { firstName, lastName, businessName, businessDescription, category, location, instagram, whatsapp, logo, logoUrl, bannerUrl } = data;
+        const { firstName, lastName, businessName, businessDescription, category, location, instagram, whatsapp, logo, logoUrl, bannerUrl, } = data;
         await this.prisma.user.update({
             where: { id },
             data: { firstName, lastName },

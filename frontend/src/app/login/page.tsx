@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, ArrowLeft, ShieldCheck } from "lucide-react";
@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 
 type AuthMode = "password" | "otp";
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
     const { login } = useAuth();
     const searchParams = useSearchParams();
@@ -63,7 +63,11 @@ export default function LoginPage() {
 
             login(response.data.access_token, response.data.user);
             toast.success("Welcome back!");
-            router.push("/dashboard");
+            if (response.data.user?.business) {
+                router.push("/dashboard");
+            } else {
+                router.push("/profile-setup");
+            }
         } catch (err: any) {
             const msg = err.response?.data?.message || "Invalid email or password";
             setError(msg);
@@ -142,7 +146,7 @@ export default function LoginPage() {
                                 <div>
                                     <div className="flex justify-between items-center mb-1.5 ml-1">
                                         <label className="block text-[14px] font-semibold text-[#111111]">Password</label>
-                                        <Link href="#" className="text-[13px] font-medium text-[#1E73E8] hover:underline">
+                                        <Link href="/forgot-password" className="text-[13px] font-medium text-[#1E73E8] hover:underline">
                                             Forgot Password?
                                         </Link>
                                     </div>
@@ -295,5 +299,17 @@ export default function LoginPage() {
                 </div>
             </div>
         </AuthLayout>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-10 h-10 border-4 border-[#1E73E8]/20 border-t-[#1E73E8] rounded-full animate-spin" />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     );
 }

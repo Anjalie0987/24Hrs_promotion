@@ -25,10 +25,14 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             statusCode: status,
             timestamp: new Date().toISOString(),
             path: request.url,
-            message: typeof message === 'object' ? message.message || message : message,
+            message: typeof message === 'object'
+                ? message.message || message
+                : message,
         };
         if (status === common_1.HttpStatus.INTERNAL_SERVER_ERROR) {
-            this.logger.error(`[${request.method}] ${request.url} - Error: ${exception instanceof Error ? exception.message : JSON.stringify(exception)}`, exception instanceof Error ? exception.stack : undefined);
+            this.logger.error(`[${request.method}] ${request.url} - Error: ${exception instanceof Error
+                ? exception.message
+                : JSON.stringify(exception)}`, exception instanceof Error ? exception.stack : undefined);
         }
         response.status(status).json(errorResponse);
     }

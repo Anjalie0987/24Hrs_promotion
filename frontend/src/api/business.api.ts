@@ -18,6 +18,15 @@ export const createBusiness = async (data: BusinessData) => {
   return response.data;
 };
 
+export const uploadBusinessImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await api.post('/business/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+};
+
 export const getMyBusiness = async () => {
   const response = await api.get('/business/me');
   return response.data;

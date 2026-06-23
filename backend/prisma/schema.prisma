@@ -5,8 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "library"
+  provider      = "prisma-client-js"
+  engineType    = "library"
+  //binaryTargets = ["native", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -19,16 +21,34 @@ enum Role {
   BUSINESS_OWNER
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum PromotionStatus {
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  DISPUTED
+}
+
 model User {
-  id         String     @id @default(uuid())
-  email      String     @unique
-  password   String
-  firstName  String?
-  lastName   String?
-  role       Role       @default(USER)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  business   Business?
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  firstName     String?
+  lastName      String?
+  role          Role           @default(USER)
+  isEmailVerified Boolean      @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  business      Business?
+  notifications Notification[]
+  savedPartners SavedPartner[]
 }
 
 model Business {
@@ -42,6 +62,11 @@ model Business {
   logoUrl     String?
   bannerUrl   String?
   trustScore  Int      @default(50)
+  website     String?
+  isVerified  Boolean  @default(false)
+  city        String?
+  state       String?
+  isAvailable Boolean  @default(true)
 
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
@@ -50,6 +75,8 @@ model Business {
 
   sentRequests     PromotionRequest[] @relation("Sender")
   receivedRequests PromotionRequest[] @relation("Receiver")
+  savedBy          SavedPartner[]
+  downloads        BannerDownload[]   @relation("Downloader")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,12 +91,18 @@ model Promotion {
   startTime     DateTime
   endTime       DateTime
 
-  status        String   @default("ACTIVE") // ACTIVE, COMPLETED, EXPIRED
+  status        PromotionStatus @default(ACTIVE)
 
   senderProof   String?
   receiverProof String?
 
   createdAt     DateTime @default(now())
+
+  clicks        ClickTracking[]
+  qrScans       QRScanTracking[]
+  bannerDownloads BannerDownload[]
+
+  @@index([status])
 }
 
 model PromotionRequest {
@@ -77,7 +110,7 @@ model PromotionRequest {
   senderBusinessId    String
   receiverBusinessId  String
   bannerId            String
-  status              String   @default("PENDING")
+  status              RequestStatus @default(PENDING)
   createdAt           DateTime @default(now())
 
   senderBusiness      Business @relation("Sender", fields: [senderBusinessId], references: [id])
@@ -85,18 +118,119 @@ model PromotionRequest {
   banner              Banner   @relation(fields: [bannerId], references: [id])
   
   promotion           Promotion?
+
+  @@index([senderBusinessId])
+  @@index([receiverBusinessId])
+  @@index([status])
 }
 
 model Banner {
   id         String   @id @default(uuid())
-  imageUrl   String
+  originalImageUrl    String
+  watermarkedImageUrl String?
   title      String?
 
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 
   promotionRequests PromotionRequest[]
+  clicks            ClickTracking[]
+  qrScans           QRScanTracking[]
+  downloads         BannerDownload[]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, isRead])
+}
+
+model SavedPartner {
+  id         String   @id @default(uuid())
+  userId     String
+  businessId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+}
+
+model ClickTracking {
+  id          String    @id @default(uuid())
+  promotionId String
+  bannerId    String
+  userAgent   String?
+  ipAddress   String?
+  country     String?
+  device      String?
+  browser     String?
+  createdAt   DateTime  @default(now())
+
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  banner      Banner    @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+
+  @@index([promotionId])
+  @@index([bannerId])
+  @@index([createdAt])
+}
+
+model QRScanTracking {
+  id          String    @id @default(uuid())
+  promotionId String
+  bannerId    String
+  userAgent   String?
+  ipAddress   String?
+  location    String?
+  device      String?
+  browser     String?
+  createdAt   DateTime  @default(now())
+
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  banner      Banner    @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+
+  @@index([promotionId])
+  @@index([bannerId])
+  @@index([createdAt])
+}
+
+model BannerDownload {
+  id            String    @id @default(uuid())
+  promotionId   String?
+  bannerId      String
+  downloaderId  String
+  createdAt     DateTime  @default(now())
+
+  promotion     Promotion? @relation(fields: [promotionId], references: [id], onDelete: SetNull)
+  banner        Banner     @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+  downloader    Business   @relation("Downloader", fields: [downloaderId], references: [id], onDelete: Cascade)
+
+  @@index([promotionId])
+  @@index([bannerId])
+  @@index([downloaderId])
+  @@index([createdAt])
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  type      String
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, code])
 }

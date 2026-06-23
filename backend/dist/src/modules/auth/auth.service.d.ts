@@ -1,9 +1,24 @@
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 export declare class AuthService {
     private readonly prisma;
     private readonly jwtService;
-    constructor(prisma: PrismaService, jwtService: JwtService);
+    private readonly emailService;
+    constructor(prisma: PrismaService, jwtService: JwtService, emailService: EmailService);
+    private generateOtp;
+    sendSignupOtp(data: {
+        email: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    verifySignupOtp(data: {
+        email: string;
+        otp: string;
+    }): Promise<{
+        verified: boolean;
+    }>;
     signup(data: {
         email: string;
         password: string;
@@ -16,7 +31,22 @@ export declare class AuthService {
             email: string;
             firstName: string | null;
             lastName: string | null;
+            isEmailVerified: boolean;
         };
+    }>;
+    forgotPassword(data: {
+        email: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    resetPassword(data: {
+        email: string;
+        otp: string;
+        newPassword: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
     }>;
     login(data: {
         email: string;
@@ -28,6 +58,37 @@ export declare class AuthService {
             email: string;
             firstName: string | null;
             lastName: string | null;
+            isEmailVerified: true;
+            business: ({
+                banners: {
+                    id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    originalImageUrl: string;
+                    watermarkedImageUrl: string | null;
+                    title: string | null;
+                    businessId: string;
+                }[];
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                category: string;
+                description: string | null;
+                location: string | null;
+                instagram: string | null;
+                whatsapp: string | null;
+                logoUrl: string | null;
+                bannerUrl: string | null;
+                trustScore: number;
+                website: string | null;
+                isVerified: boolean;
+                city: string | null;
+                state: string | null;
+                isAvailable: boolean;
+                userId: string;
+            }) | null;
         };
     }>;
 }

@@ -12,15 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BannersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 let BannersService = class BannersService {
     prisma;
-    constructor(prisma) {
+    cloudinary;
+    constructor(prisma, cloudinary) {
         this.prisma = prisma;
+        this.cloudinary = cloudinary;
     }
-    async create(businessId, data) {
+    async create(businessId, file, data) {
+        const uploadResult = await this.cloudinary.uploadImage(file);
+        const originalImageUrl = uploadResult.secure_url;
+        const watermarkedImageUrl = this.cloudinary.getWatermarkedUrl(uploadResult.public_id);
         return this.prisma.banner.create({
             data: {
-                ...data,
+                title: data.title,
+                originalImageUrl,
+                watermarkedImageUrl,
                 businessId,
             },
         });
@@ -49,6 +57,7 @@ let BannersService = class BannersService {
 exports.BannersService = BannersService;
 exports.BannersService = BannersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        cloudinary_service_1.CloudinaryService])
 ], BannersService);
 //# sourceMappingURL=banners.service.js.map

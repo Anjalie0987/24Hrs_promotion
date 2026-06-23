@@ -1,11 +1,18 @@
 import { BusinessService } from './business.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 export declare class BusinessController {
     private readonly businessService;
-    constructor(businessService: BusinessService);
+    private readonly cloudinaryService;
+    constructor(businessService: BusinessService, cloudinaryService: CloudinaryService);
+    uploadImage(file: Express.Multer.File): Promise<{
+        secure_url: string;
+    }>;
     create(req: any, dto: CreateBusinessDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -15,12 +22,17 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     findMe(req: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -30,12 +42,17 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     update(req: any, dto: UpdateBusinessDto): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -45,21 +62,28 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     getRecommended(req: any): Promise<{
         matchScore: number;
+        matchReason: string;
         banners: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -69,25 +93,47 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }[]>;
-    findAllAlias(req: any, query: {
-        search?: string;
-        category?: string;
-        location?: string;
-    }): Promise<({
+    findAllAlias(req: any, query: any): Promise<{
+        metrics: {
+            completedPromotions: number;
+            successRate: number;
+        };
+        requestStatus: any;
         banners: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         }[];
-    } & {
+        sentRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
+        receivedRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -97,25 +143,27 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
-    })[]>;
-    findAll(req: any, query: {
-        search?: string;
-        category?: string;
-        location?: string;
-    }): Promise<({
+    }[]>;
+    getSavedPartners(req: any): Promise<({
         banners: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -125,12 +173,145 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     })[]>;
+    findAll(req: any, query: any): Promise<{
+        metrics: {
+            completedPromotions: number;
+            successRate: number;
+        };
+        requestStatus: any;
+        banners: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
+            title: string | null;
+            businessId: string;
+        }[];
+        sentRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
+        receivedRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        userId: string;
+    }[]>;
+    savePartner(req: any, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        userId: string;
+        businessId: string;
+    }>;
+    unsavePartner(req: any, id: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
+    getProfile(req: any, id: string): Promise<{
+        metrics: {
+            completedPromotions: number;
+            successRate: number;
+            totalEngagement: number;
+            avgClicks: number;
+            avgQrScans: number;
+            completionRate: number;
+        };
+        relatedBusinesses: ({
+            banners: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                originalImageUrl: string;
+                watermarkedImageUrl: string | null;
+                title: string | null;
+                businessId: string;
+            }[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        })[];
+        recentActivity: any[];
+        matchScore: number;
+        matchReason: string;
+        requestStatus: any;
+        banners: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
+            title: string | null;
+            businessId: string;
+        }[];
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        userId: string;
+    }>;
     findOne(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         category: string;
         description: string | null;
@@ -140,8 +321,11 @@ export declare class BusinessController {
         logoUrl: string | null;
         bannerUrl: string | null;
         trustScore: number;
-        createdAt: Date;
-        updatedAt: Date;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
 }

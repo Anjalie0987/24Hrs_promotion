@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const business_service_1 = require("./business.service");
 const business_controller_1 = require("./business.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
+const cloudinary_module_1 = require("../cloudinary/cloudinary.module");
 let BusinessModule = class BusinessModule {
 };
 exports.BusinessModule = BusinessModule;
 exports.BusinessModule = BusinessModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, cloudinary_module_1.CloudinaryModule],
         controllers: [business_controller_1.BusinessController],
         providers: [business_service_1.BusinessService],
         exports: [business_service_1.BusinessService],

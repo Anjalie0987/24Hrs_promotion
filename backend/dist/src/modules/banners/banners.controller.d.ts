@@ -4,14 +4,14 @@ export declare class BannersController {
     private readonly bannersService;
     private readonly businessService;
     constructor(bannersService: BannersService, businessService: BusinessService);
-    upload(req: any, data: {
-        imageUrl: string;
+    upload(req: any, file: Express.Multer.File, data: {
         title?: string;
     }): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string;
+        originalImageUrl: string;
+        watermarkedImageUrl: string | null;
         title: string | null;
         businessId: string;
     }>;
@@ -19,7 +19,8 @@ export declare class BannersController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string;
+        originalImageUrl: string;
+        watermarkedImageUrl: string | null;
         title: string | null;
         businessId: string;
     }[]>;
@@ -27,7 +28,8 @@ export declare class BannersController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        imageUrl: string;
+        originalImageUrl: string;
+        watermarkedImageUrl: string | null;
         title: string | null;
         businessId: string;
     }>;

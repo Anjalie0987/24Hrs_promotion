@@ -12,55 +12,8 @@ export declare class RequestsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
-            title: string | null;
-            businessId: string;
-        };
-        receiverBusiness: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            category: string;
-            location: string | null;
-            instagram: string | null;
-            whatsapp: string | null;
-            logoUrl: string | null;
-            bannerUrl: string | null;
-            description: string | null;
-            trustScore: number;
-            userId: string;
-        };
-    } & {
-        id: string;
-        createdAt: Date;
-        senderBusinessId: string;
-        receiverBusinessId: string;
-        bannerId: string;
-        status: string;
-    }>;
-    accept(req: any, id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        senderBusinessId: string;
-        receiverBusinessId: string;
-        bannerId: string;
-        status: string;
-    }>;
-    reject(req: any, id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        senderBusinessId: string;
-        receiverBusinessId: string;
-        bannerId: string;
-        status: string;
-    }>;
-    findIncoming(req: any): Promise<({
-        banner: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         };
@@ -70,29 +23,179 @@ export declare class RequestsController {
             updatedAt: Date;
             name: string;
             category: string;
+            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
-            description: string | null;
             trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        };
+        receiverBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
             userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
-        status: string;
-    })[]>;
-    findSent(req: any): Promise<({
+    }>;
+    accept(req: any, id: string): Promise<{
+        senderBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        };
+        receiverBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        senderBusinessId: string;
+        receiverBusinessId: string;
+        bannerId: string;
+    }>;
+    reject(req: any, id: string): Promise<{
+        senderBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        senderBusinessId: string;
+        receiverBusinessId: string;
+        bannerId: string;
+    }>;
+    cancel(req: any, id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        senderBusinessId: string;
+        receiverBusinessId: string;
+        bannerId: string;
+    }>;
+    findIncoming(req: any, skip?: string, take?: string): Promise<({
         banner: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
+            title: string | null;
+            businessId: string;
+        };
+        senderBusiness: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        senderBusinessId: string;
+        receiverBusinessId: string;
+        bannerId: string;
+    })[]>;
+    findSent(req: any, skip?: string, take?: string): Promise<({
+        banner: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         };
@@ -102,21 +205,26 @@ export declare class RequestsController {
             updatedAt: Date;
             name: string;
             category: string;
+            description: string | null;
             location: string | null;
             instagram: string | null;
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
-            description: string | null;
             trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
             userId: string;
         };
     } & {
         id: string;
         createdAt: Date;
+        status: import("@prisma/client").$Enums.RequestStatus;
         senderBusinessId: string;
         receiverBusinessId: string;
         bannerId: string;
-        status: string;
     })[]>;
 }

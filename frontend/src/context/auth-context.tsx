@@ -8,13 +8,14 @@ interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  businesses?: any[];
+  business?: any;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
+  token: string | null;
   login: (token: string, userData: User) => void;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -24,15 +25,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
     try {
       const response = await api.get('/users/me');
       setUser(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch user", error);
-      setUser(null);
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        setUser(null);
+      }
+      // On 429 or network errors, we preserve the user loaded from localStorage
     } finally {
       setLoading(false);
     }
@@ -42,31 +47,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedToken = localStorage.getItem('access_token');
     const savedUser = localStorage.getItem('user');
     
-    if (savedToken && savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-        // Optionally fetch fresh user data from API
-        fetchUser();
-      } catch (error) {
-        console.error("Failed to parse saved user", error);
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
+      if (savedToken && savedUser) {
+        try {
+          setUser(JSON.parse(savedUser));
+          setToken(savedToken);
+          // Optionally fetch fresh user data from API
+          fetchUser();
+        } catch (error) {
+          console.error("Failed to parse saved user", error);
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
   }, []);
 
-  const login = (token: string, userData: User) => {
-    localStorage.setItem('access_token', token);
+  const login = (newToken: string, userData: User) => {
+    localStorage.setItem('access_token', newToken);
     localStorage.setItem('user', JSON.stringify(userData));
+    setToken(newToken);
     setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
+    setToken(null);
     setUser(null);
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   const refreshUser = async () => {
@@ -74,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, isAuthenticated: !!user, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

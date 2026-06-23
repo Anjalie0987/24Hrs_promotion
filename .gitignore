@@ -2,3 +2,5 @@
 
 # Ignore zip files
 *.zip
+node_modules
+.next

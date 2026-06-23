@@ -1,6 +1,6 @@
 import api from './api';
 
-export const uploadBanner = async (data: { imageUrl: string; title?: string }) => {
+export const uploadBanner = async (data: FormData) => {
   const response = await api.post('/banners/upload', data);
   return response.data;
 };

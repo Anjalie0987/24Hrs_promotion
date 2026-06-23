@@ -17,13 +17,27 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const signup_dto_1 = require("./dto/signup.dto");
+const otp_dto_1 = require("./dto/otp.dto");
+const throttler_1 = require("@nestjs/throttler");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
         this.authService = authService;
     }
+    async sendSignupOtp(dto) {
+        return this.authService.sendSignupOtp(dto);
+    }
+    async verifySignupOtp(dto) {
+        return this.authService.verifySignupOtp(dto);
+    }
     async signup(signupDto) {
         return this.authService.signup(signupDto);
+    }
+    async forgotPassword(dto) {
+        return this.authService.forgotPassword(dto);
+    }
+    async resetPassword(dto) {
+        return this.authService.resetPassword(dto);
     }
     async login(loginDto) {
         return this.authService.login(loginDto);
@@ -31,6 +45,23 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 900000 } }),
+    (0, common_1.Post)('send-signup-otp'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [otp_dto_1.SendOtpDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "sendSignupOtp", null);
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 900000 } }),
+    (0, common_1.Post)('verify-signup-otp'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [otp_dto_1.VerifyOtpDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifySignupOtp", null);
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 900000 } }),
     (0, common_1.Post)('signup'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -38,6 +69,23 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signup", null);
 __decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 900000 } }),
+    (0, common_1.Post)('forgot-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [otp_dto_1.SendOtpDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 10, ttl: 900000 } }),
+    (0, common_1.Post)('reset-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [otp_dto_1.ResetPasswordDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
+__decorate([
+    (0, throttler_1.Throttle)({ default: { limit: 20, ttl: 900000 } }),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

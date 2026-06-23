@@ -19,7 +19,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-import { createBusiness, updateBusiness, BusinessData } from "@/api/business.api";
+import { createBusiness, updateBusiness, uploadBusinessImage, BusinessData } from "@/api/business.api";
+import { useAuth } from "@/context/auth-context";
 
 const categories = [
     "Retail", "Restaurant", "Education", "Real Estate", "Fashion",
@@ -33,6 +34,7 @@ interface BusinessFormProps {
 
 export default function BusinessForm({ initialData, isEditMode = false }: BusinessFormProps) {
     const router = useRouter();
+    const { refreshUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
@@ -82,15 +84,12 @@ export default function BusinessForm({ initialData, isEditMode = false }: Busine
         else setUploadingBanner(true);
 
         try {
-            // Mocking a 1.5s upload delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // In a real app, this would be an actual API call to S3/Cloudinary
-            const previewUrl = await mountPreview(file);
+            const response = await uploadBusinessImage(file);
+            const imageUrl = response.secure_url;
             
             setFormData(prev => ({
                 ...prev,
-                [type === 'logo' ? 'logoUrl' : 'bannerUrl']: previewUrl
+                [type === 'logo' ? 'logoUrl' : 'bannerUrl']: imageUrl
             }));
             
             toast.success(`${type === 'logo' ? 'Logo' : 'Banner'} uploaded successfully!`);
@@ -125,6 +124,8 @@ export default function BusinessForm({ initialData, isEditMode = false }: Busine
                 await createBusiness(formData);
                 toast.success("Business created successfully!");
             }
+            
+            await refreshUser();
             
             setTimeout(() => {
                 router.push("/dashboard");

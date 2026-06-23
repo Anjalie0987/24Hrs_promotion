@@ -4,13 +4,14 @@ export declare class PromotionsController {
     private readonly promotionsService;
     private readonly businessService;
     constructor(promotionsService: PromotionsService, businessService: BusinessService);
-    findActive(req: any): Promise<({
+    findActive(req: any, skip?: string, take?: string): Promise<({
         request: {
             banner: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                imageUrl: string;
+                originalImageUrl: string;
+                watermarkedImageUrl: string | null;
                 title: string | null;
                 businessId: string;
             };
@@ -20,13 +21,18 @@ export declare class PromotionsController {
                 updatedAt: Date;
                 name: string;
                 category: string;
+                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
-                description: string | null;
                 trustScore: number;
+                website: string | null;
+                isVerified: boolean;
+                city: string | null;
+                state: string | null;
+                isAvailable: boolean;
                 userId: string;
             };
             receiverBusiness: {
@@ -35,40 +41,46 @@ export declare class PromotionsController {
                 updatedAt: Date;
                 name: string;
                 category: string;
+                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
-                description: string | null;
                 trustScore: number;
+                website: string | null;
+                isVerified: boolean;
+                city: string | null;
+                state: string | null;
+                isAvailable: boolean;
                 userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
             senderBusinessId: string;
             receiverBusinessId: string;
             bannerId: string;
-            status: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        status: string;
+        status: import("@prisma/client").$Enums.PromotionStatus;
+        requestId: string;
         startTime: Date;
         endTime: Date;
         senderProof: string | null;
         receiverProof: string | null;
-        requestId: string;
     })[]>;
-    findAll(req: any): Promise<({
+    findCompleted(req: any, skip?: string, take?: string): Promise<({
         request: {
             banner: {
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                imageUrl: string;
+                originalImageUrl: string;
+                watermarkedImageUrl: string | null;
                 title: string | null;
                 businessId: string;
             };
@@ -78,13 +90,18 @@ export declare class PromotionsController {
                 updatedAt: Date;
                 name: string;
                 category: string;
+                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
-                description: string | null;
                 trustScore: number;
+                website: string | null;
+                isVerified: boolean;
+                city: string | null;
+                state: string | null;
+                isAvailable: boolean;
                 userId: string;
             };
             receiverBusiness: {
@@ -93,32 +110,37 @@ export declare class PromotionsController {
                 updatedAt: Date;
                 name: string;
                 category: string;
+                description: string | null;
                 location: string | null;
                 instagram: string | null;
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
-                description: string | null;
                 trustScore: number;
+                website: string | null;
+                isVerified: boolean;
+                city: string | null;
+                state: string | null;
+                isAvailable: boolean;
                 userId: string;
             };
         } & {
             id: string;
             createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
             senderBusinessId: string;
             receiverBusinessId: string;
             bannerId: string;
-            status: string;
         };
     } & {
         id: string;
         createdAt: Date;
-        status: string;
+        status: import("@prisma/client").$Enums.PromotionStatus;
+        requestId: string;
         startTime: Date;
         endTime: Date;
         senderProof: string | null;
         receiverProof: string | null;
-        requestId: string;
     })[]>;
     uploadProof(req: any, dto: {
         promotionId: string;
@@ -126,11 +148,11 @@ export declare class PromotionsController {
     }): Promise<{
         id: string;
         createdAt: Date;
-        status: string;
+        status: import("@prisma/client").$Enums.PromotionStatus;
+        requestId: string;
         startTime: Date;
         endTime: Date;
         senderProof: string | null;
         receiverProof: string | null;
-        requestId: string;
     }>;
 }

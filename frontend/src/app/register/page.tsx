@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AuthLayout } from "@/components/auth-layout";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import api from "@/api/api";
 import { toast } from "react-hot-toast";
@@ -14,24 +14,30 @@ export default function SignupPage() {
     const [error, setError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
-        businessName: "",
         email: "",
+        businessName: "",
         mobile: "",
         password: "",
         confirmPassword: "",
         acceptTerms: false,
     });
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prev: any) => ({
+        setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
         setError(null);
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleFinalSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
@@ -52,15 +58,27 @@ export default function SignupPage() {
             toast.success("Account created! Please login.");
             router.push("/login?signup=success");
         } catch (err: any) {
-            const msg = err.response?.data?.message || "Failed to create account";
-            setError(msg);
-            toast.error(msg);
+            setError(err.response?.data?.message || "Failed to create account");
         } finally {
             setIsLoading(false);
         }
     };
 
     const inputClasses = "w-full h-12 px-4 rounded-[12px] border border-[#E6F0FF] text-[#111111] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#1E73E8]/20 focus:border-[#1E73E8] transition-all bg-white placeholder-[#94A3B8]";
+
+    if (!mounted) {
+        return (
+            <AuthLayout
+                title="Create Your Business Account"
+                subtitle="Start your 24-hour cross promotion journey and grow your business through structured status marketing."
+                description="Join a trusted network of businesses that promote each other daily through WhatsApp and Instagram stories — with measurable engagement tracking."
+            >
+                <div className="flex justify-center items-center py-20">
+                    <div className="w-8 h-8 border-4 border-[#1E73E8]/30 border-t-[#1E73E8] rounded-full animate-spin"></div>
+                </div>
+            </AuthLayout>
+        );
+    }
 
     return (
         <AuthLayout
@@ -73,14 +91,22 @@ export default function SignupPage() {
                     {error}
                 </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
+
+            <motion.form 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onSubmit={handleFinalSignup} 
+                className="space-y-4"
+            >
                 <div>
-                    <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Business Name</label>
+                    <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Email Address</label>
                     <input
-                        type="text"
-                        name="businessName"
-                        placeholder="e.g. Acme Coffee Roasters"
+                        suppressHydrationWarning
+                        type="email"
+                        name="email"
+                        placeholder="name@business.com"
                         className={inputClasses}
+                        value={formData.email}
                         onChange={handleChange}
                         required
                         disabled={isLoading}
@@ -88,12 +114,14 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                    <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Email Address</label>
+                    <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Business Name</label>
                     <input
-                        type="email"
-                        name="email"
-                        placeholder="name@business.com"
+                        suppressHydrationWarning
+                        type="text"
+                        name="businessName"
+                        placeholder="e.g. Acme Coffee Roasters"
                         className={inputClasses}
+                        value={formData.businessName}
                         onChange={handleChange}
                         required
                         disabled={isLoading}
@@ -103,10 +131,12 @@ export default function SignupPage() {
                 <div>
                     <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Mobile Number (Optional)</label>
                     <input
+                        suppressHydrationWarning
                         type="tel"
                         name="mobile"
                         placeholder="+91 98765 43210"
                         className={inputClasses}
+                        value={formData.mobile}
                         onChange={handleChange}
                         disabled={isLoading}
                     />
@@ -116,25 +146,29 @@ export default function SignupPage() {
                     <div>
                         <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Create Password</label>
                         <input
+                            suppressHydrationWarning
                             type="password"
                             name="password"
                             placeholder="••••••••"
                             className={inputClasses}
+                            value={formData.password}
                             onChange={handleChange}
                             required
                             disabled={isLoading}
                         />
                         <p className="mt-1.5 ml-1 text-[12px] text-[#555555]">
-                            Minimum 8 characters required.
+                            Minimum 6 characters.
                         </p>
                     </div>
                     <div>
                         <label className="block text-[14px] font-semibold text-[#111111] mb-1.5 ml-1">Confirm Password</label>
                         <input
+                            suppressHydrationWarning
                             type="password"
                             name="confirmPassword"
                             placeholder="••••••••"
                             className={inputClasses}
+                            value={formData.confirmPassword}
                             onChange={handleChange}
                             required
                             disabled={isLoading}
@@ -148,6 +182,7 @@ export default function SignupPage() {
                         id="acceptTerms"
                         name="acceptTerms"
                         className="w-4 h-4 rounded-md border-[#E6F0FF] text-[#1E73E8] focus:ring-[#1E73E8]"
+                        checked={formData.acceptTerms}
                         onChange={handleChange}
                         required
                         disabled={isLoading}
@@ -159,23 +194,16 @@ export default function SignupPage() {
 
                 <div className="pt-2">
                     <motion.button
-                        whileHover={!isLoading ? { scale: 1.01, boxShadow: "0 10px 20px -5px rgba(30,115,232,0.3)" } : {}}
+                        whileHover={!isLoading ? { scale: 1.01 } : {}}
                         whileTap={!isLoading ? { scale: 0.99 } : {}}
                         type="submit"
                         disabled={isLoading}
-                        className={`w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] hover:from-[#1E73E8] hover:to-[#0F5FCC] text-white font-bold rounded-[12px] shadow-lg shadow-blue-500/20 transition-all duration-300 flex items-center justify-center ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                        className={`w-full h-12 bg-gradient-to-r from-[#2FA7F5] to-[#1E73E8] text-white font-bold rounded-[12px] shadow-lg transition-all duration-300 flex items-center justify-center ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
-                        {isLoading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            "Create Free Account"
-                        )}
+                        {isLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Complete Account"}
                     </motion.button>
-                    <p className="mt-3 text-center text-[13px] text-[#555555]">
-                        Free to join. No credit card required.
-                    </p>
                 </div>
-            </form>
+            </motion.form>
 
             <div className="text-center mt-6">
                 <p className="text-[14px] text-[#555555]">

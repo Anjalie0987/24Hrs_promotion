@@ -69,10 +69,14 @@ export default function MyBannersPage() {
             // Since we don't have that yet, we'll send the data URL as a "mock" imageUrl 
             // OR use a placeholder if the data URL is too large for the DB.
             // For this demo, let's use the preview URL (data URL) but keep it small if possible.
-            await uploadBanner({ 
-                imageUrl: previewUrl, 
-                title: bannerTitle || "New Banner" 
-            });
+            const formData = new FormData();
+            if (selectedFile) {
+                formData.append('file', selectedFile);
+            }
+            if (bannerTitle) {
+                formData.append('title', bannerTitle);
+            }
+            await uploadBanner(formData);
             
             toast.success("Banner uploaded successfully!");
             setShowUploadModal(false);

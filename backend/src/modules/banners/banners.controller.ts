@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Req,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { BannersService } from './banners.service';
 import { BusinessService } from '../business/business.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -12,9 +25,17 @@ export class BannersController {
 
   @UseGuards(JwtAuthGuard)
   @Post('upload')
-  async upload(@Req() req: any, @Body() data: { imageUrl: string; title?: string }) {
+  @UseInterceptors(FileInterceptor('file'))
+  async upload(
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() data: { title?: string },
+  ) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
     const business = await this.businessService.findMe(req.user.userId);
-    return this.bannersService.create(business.id, data);
+    return this.bannersService.create(business.id, file, data);
   }
 
   @UseGuards(JwtAuthGuard)

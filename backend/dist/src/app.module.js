@@ -19,6 +19,13 @@ const banners_module_1 = require("./modules/banners/banners.module");
 const analytics_module_1 = require("./modules/analytics/analytics.module");
 const requests_module_1 = require("./modules/requests/requests.module");
 const schedule_1 = require("@nestjs/schedule");
+const notifications_module_1 = require("./modules/notifications/notifications.module");
+const tracking_module_1 = require("./modules/tracking/tracking.module");
+const core_1 = require("@nestjs/core");
+const throttler_1 = require("@nestjs/throttler");
+const dashboard_module_1 = require("./modules/dashboard/dashboard.module");
+const email_module_1 = require("./modules/email/email.module");
+const cloudinary_module_1 = require("./modules/cloudinary/cloudinary.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,6 +33,33 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
+            throttler_1.ThrottlerModule.forRoot([
+                {
+                    name: 'default',
+                    ttl: 15 * 60000,
+                    limit: 1000,
+                },
+                {
+                    name: 'login',
+                    ttl: 15 * 60000,
+                    limit: 20,
+                },
+                {
+                    name: 'signup',
+                    ttl: 15 * 60000,
+                    limit: 10,
+                },
+                {
+                    name: 'dashboard',
+                    ttl: 15 * 60000,
+                    limit: 500,
+                },
+                {
+                    name: 'analytics',
+                    ttl: 15 * 60000,
+                    limit: 500,
+                },
+            ]),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
             business_module_1.BusinessModule,
@@ -33,10 +67,21 @@ exports.AppModule = AppModule = __decorate([
             banners_module_1.BannersModule,
             analytics_module_1.AnalyticsModule,
             requests_module_1.RequestsModule,
-            schedule_1.ScheduleModule.forRoot()
+            dashboard_module_1.DashboardModule,
+            schedule_1.ScheduleModule.forRoot(),
+            notifications_module_1.NotificationsModule,
+            tracking_module_1.TrackingModule,
+            email_module_1.EmailModule,
+            cloudinary_module_1.CloudinaryModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

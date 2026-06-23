@@ -1,35 +1,47 @@
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
-// Add a request interceptor to attach the token
+// Request Interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('access_token');
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Add a response interceptor to handle errors
+// Response Interceptor
 api.interceptors.response.use(
   (response) => response,
+
   (error) => {
-    if (error.response?.status === 401) {
-      // If we're on the client and receiving 401, clear storage and redirect if not already on login
+    if (error.response?.status === 401 || error.response?.status === 403) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');
+
         if (!window.location.pathname.includes('/login')) {
           window.location.href = '/login';
         }
       }
+    } else if (error.response?.status === 429) {
+      if (typeof window !== 'undefined') {
+        toast.error("Too many requests. Please wait a moment and try again.");
+      }
     }
+
     return Promise.reject(error);
   }
 );

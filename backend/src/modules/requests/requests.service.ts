@@ -1,17 +1,42 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PromotionsService } from '../promotions/promotions.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class RequestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly promotionsService: PromotionsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  async send(senderBusinessId: string, data: { receiverBusinessId: string; bannerId: string }) {
+  async send(
+    senderBusinessId: string,
+    data: { receiverBusinessId: string; bannerId?: string; message?: string },
+  ) {
     if (senderBusinessId === data.receiverBusinessId) {
       throw new BadRequestException('You cannot send a request to yourself');
+    }
+
+    // Rate Limiting: max 10 requests per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentRequests = await this.prisma.promotionRequest.count({
+      where: {
+        senderBusinessId,
+        createdAt: { gte: oneHourAgo },
+      },
+    });
+
+    if (recentRequests >= 10) {
+      throw new BadRequestException(
+        'You have reached the limit of 10 requests per hour. Please try again later.',
+      );
     }
 
     // Check if receiver exists
@@ -22,9 +47,23 @@ export class RequestsService {
       throw new NotFoundException('Receiver business not found');
     }
 
+    let bannerId = data.bannerId;
+    if (!bannerId) {
+      const defaultBanner = await this.prisma.banner.findFirst({
+        where: { businessId: senderBusinessId },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (!defaultBanner) {
+        throw new BadRequestException(
+          'You must create a promotional banner first before sending requests.',
+        );
+      }
+      bannerId = defaultBanner.id;
+    }
+
     // Check if banner belongs to sender
     const banner = await this.prisma.banner.findUnique({
-      where: { id: data.bannerId },
+      where: { id: bannerId },
     });
     if (!banner || banner.businessId !== senderBusinessId) {
       throw new ForbiddenException('You do not own this banner');
@@ -35,26 +74,39 @@ export class RequestsService {
       where: {
         senderBusinessId,
         receiverBusinessId: data.receiverBusinessId,
-        bannerId: data.bannerId,
+        bannerId: bannerId,
         status: 'PENDING',
       },
     });
     if (existing) {
-      throw new BadRequestException('A pending request already exists for this banner');
+      throw new BadRequestException(
+        'A pending request already exists for this banner',
+      );
     }
 
-    return this.prisma.promotionRequest.create({
+    const newRequest = await this.prisma.promotionRequest.create({
       data: {
         senderBusinessId,
         receiverBusinessId: data.receiverBusinessId,
-        bannerId: data.bannerId,
+        bannerId: bannerId,
         status: 'PENDING',
       },
       include: {
+        senderBusiness: true,
         receiverBusiness: true,
         banner: true,
       },
     });
+
+    // Real-time database notification
+    await this.notificationsService.createNotification(
+      newRequest.receiverBusiness.userId,
+      'New Promotion Request',
+      `You received a new promotion request from ${newRequest.senderBusiness.name}`,
+      'promotion_request',
+    );
+
+    return newRequest;
   }
 
   async accept(id: string, businessId: string) {
@@ -71,16 +123,30 @@ export class RequestsService {
     }
 
     if (request.status !== 'PENDING') {
-      throw new BadRequestException(`Request is already ${request.status.toLowerCase()}`);
+      throw new BadRequestException(
+        `Request is already ${request.status.toLowerCase()}`,
+      );
     }
 
     const updatedRequest = await this.prisma.promotionRequest.update({
       where: { id },
-      data: { status: 'ACCEPTED' },
+      data: { status: 'APPROVED' },
+      include: {
+        senderBusiness: true,
+        receiverBusiness: true,
+      },
     });
 
     // Automatically create promotion
     await this.promotionsService.create(id);
+
+    // Real-time database notification to sender
+    await this.notificationsService.createNotification(
+      updatedRequest.senderBusiness.userId,
+      'Request Approved',
+      `Your promotion request to ${updatedRequest.receiverBusiness.name} was approved!`,
+      'promotion_approved',
+    );
 
     return updatedRequest;
   }
@@ -99,16 +165,63 @@ export class RequestsService {
     }
 
     if (request.status !== 'PENDING') {
-      throw new BadRequestException(`Request is already ${request.status.toLowerCase()}`);
+      throw new BadRequestException(
+        `Request is already ${request.status.toLowerCase()}`,
+      );
     }
 
-    return this.prisma.promotionRequest.update({
+    const updatedRequest = await this.prisma.promotionRequest.update({
       where: { id },
       data: { status: 'REJECTED' },
+      include: { senderBusiness: true },
     });
+
+    // Real-time database notification to sender
+    await this.notificationsService.createNotification(
+      updatedRequest.senderBusiness.userId,
+      'Request Rejected',
+      `Your promotion request was rejected.`,
+      'promotion_rejected',
+    );
+
+    return updatedRequest;
   }
 
-  async findIncoming(businessId: string) {
+  async cancel(id: string, businessId: string) {
+    const request = await this.prisma.promotionRequest.findUnique({
+      where: { id },
+      include: { receiverBusiness: true },
+    });
+
+    if (!request) throw new NotFoundException('Request not found');
+
+    if (request.senderBusinessId !== businessId) {
+      throw new ForbiddenException('Only the sender can cancel this request');
+    }
+
+    if (request.status !== 'PENDING') {
+      throw new BadRequestException(
+        `Cannot cancel a request that is ${request.status}`,
+      );
+    }
+
+    const updatedRequest = await this.prisma.promotionRequest.update({
+      where: { id },
+      data: { status: 'CANCELLED' },
+    });
+
+    // Real-time database notification to receiver
+    await this.notificationsService.createNotification(
+      request.receiverBusiness.userId,
+      'Request Cancelled',
+      `A promotion request from ${request.senderBusinessId} was cancelled.`,
+      'request_cancelled',
+    );
+
+    return updatedRequest;
+  }
+
+  async findIncoming(businessId: string, skip = 0, take = 20) {
     return this.prisma.promotionRequest.findMany({
       where: { receiverBusinessId: businessId },
       include: {
@@ -116,10 +229,12 @@ export class RequestsService {
         banner: true,
       },
       orderBy: { createdAt: 'desc' },
+      skip,
+      take,
     });
   }
 
-  async findSent(businessId: string) {
+  async findSent(businessId: string, skip = 0, take = 20) {
     return this.prisma.promotionRequest.findMany({
       where: { senderBusinessId: businessId },
       include: {
@@ -127,6 +242,8 @@ export class RequestsService {
         banner: true,
       },
       orderBy: { createdAt: 'desc' },
+      skip,
+      take,
     });
   }
 }

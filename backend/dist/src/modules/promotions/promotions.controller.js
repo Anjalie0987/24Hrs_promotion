@@ -24,13 +24,13 @@ let PromotionsController = class PromotionsController {
         this.promotionsService = promotionsService;
         this.businessService = businessService;
     }
-    async findActive(req) {
-        const business = await this.businessService.findMe(req.user.userId);
-        return this.promotionsService.findActive(business.id);
+    async findActive(req, skip, take) {
+        const business = await this.businessService.findMe(req.user.id || req.user.userId);
+        return this.promotionsService.findActive(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
     }
-    async findAll(req) {
-        const business = await this.businessService.findMe(req.user.userId);
-        return this.promotionsService.findAll(business.id);
+    async findCompleted(req, skip, take) {
+        const business = await this.businessService.findMe(req.user.id || req.user.userId);
+        return this.promotionsService.findCompleted(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
     }
     async uploadProof(req, dto) {
         const business = await this.businessService.findMe(req.user.userId);
@@ -42,18 +42,22 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('active'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('skip')),
+    __param(2, (0, common_1.Query)('take')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], PromotionsController.prototype, "findActive", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('all'),
+    (0, common_1.Get)('completed'),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('skip')),
+    __param(2, (0, common_1.Query)('take')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
-], PromotionsController.prototype, "findAll", null);
+], PromotionsController.prototype, "findCompleted", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('upload-proof'),

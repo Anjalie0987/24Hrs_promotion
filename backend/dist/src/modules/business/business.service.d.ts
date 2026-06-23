@@ -10,13 +10,18 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     findMe(userId: string): Promise<{
@@ -25,13 +30,18 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     findOne(id: string): Promise<{
@@ -40,13 +50,18 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
     update(userId: string, dto: UpdateBusinessDto): Promise<{
@@ -55,25 +70,135 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     }>;
-    findAll(excludeUserId: string, filters?: {
-        search?: string;
-        category?: string;
-        location?: string;
-    }): Promise<({
+    findAll(excludeUserId: string, filters?: any): Promise<{
+        metrics: {
+            completedPromotions: number;
+            successRate: number;
+        };
+        requestStatus: any;
         banners: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
+            title: string | null;
+            businessId: string;
+        }[];
+        sentRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
+        receivedRequests: {
+            id: string;
+            createdAt: Date;
+            status: import("@prisma/client").$Enums.RequestStatus;
+            senderBusinessId: string;
+            receiverBusinessId: string;
+            bannerId: string;
+        }[];
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        userId: string;
+    }[]>;
+    incrementTrustScore(id: string, amount: number): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        userId: string;
+    } | undefined>;
+    getRecommended(userId: string): Promise<{
+        matchScore: number;
+        matchReason: string;
+        banners: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
+            title: string | null;
+            businessId: string;
+        }[];
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        userId: string;
+    }[]>;
+    savePartner(userId: string, businessId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        userId: string;
+        businessId: string;
+    }>;
+    unsavePartner(userId: string, businessId: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
+    getSavedPartners(userId: string): Promise<({
+        banners: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         }[];
@@ -83,37 +208,69 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
     })[]>;
-    incrementTrustScore(id: string, amount: number): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        category: string;
-        location: string | null;
-        instagram: string | null;
-        whatsapp: string | null;
-        logoUrl: string | null;
-        bannerUrl: string | null;
-        description: string | null;
-        trustScore: number;
-        userId: string;
-    } | undefined>;
-    getRecommended(userId: string): Promise<{
+    getProfile(businessId: string, currentUserId: string): Promise<{
+        metrics: {
+            completedPromotions: number;
+            successRate: number;
+            totalEngagement: number;
+            avgClicks: number;
+            avgQrScans: number;
+            completionRate: number;
+        };
+        relatedBusinesses: ({
+            banners: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                originalImageUrl: string;
+                watermarkedImageUrl: string | null;
+                title: string | null;
+                businessId: string;
+            }[];
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            userId: string;
+        })[];
+        recentActivity: any[];
         matchScore: number;
+        matchReason: string;
+        requestStatus: any;
         banners: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            imageUrl: string;
+            originalImageUrl: string;
+            watermarkedImageUrl: string | null;
             title: string | null;
             businessId: string;
         }[];
@@ -122,13 +279,19 @@ export declare class BusinessService {
         updatedAt: Date;
         name: string;
         category: string;
+        description: string | null;
         location: string | null;
         instagram: string | null;
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
-        description: string | null;
         trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
         userId: string;
-    }[]>;
+    }>;
+    private getComplementaryMap;
 }

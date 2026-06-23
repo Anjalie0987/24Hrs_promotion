@@ -8,7 +8,6 @@ const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
 const app_module_1 = require("./app.module");
 const helmet_1 = __importDefault(require("helmet"));
-const express_rate_limit_1 = require("express-rate-limit");
 const http_exception_filter_1 = require("./common/filters/http-exception.filter");
 const express_1 = require("express");
 async function bootstrap() {
@@ -19,15 +18,15 @@ async function bootstrap() {
     app.use((0, express_1.json)({ limit: '50mb' }));
     app.use((0, express_1.urlencoded)({ limit: '50mb', extended: true }));
     app.enableCors({
-        origin: true,
+        origin: [
+            'https://24hourspromotion.com',
+            'https://www.24hourspromotion.com',
+            'http://localhost:3000',
+            'http://localhost:3001',
+        ],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true,
     });
-    app.use((0, express_rate_limit_1.rateLimit)({
-        windowMs: 15 * 60 * 1000,
-        max: 100,
-        message: 'Too many requests from this IP, please try again later.',
-    }));
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -35,9 +34,9 @@ async function bootstrap() {
     }));
     app.useGlobalFilters(new http_exception_filter_1.AllExceptionsFilter());
     app.setGlobalPrefix('api');
-    const port = process.env.PORT || 3001;
+    const port = process.env.PORT || 3000;
     await app.listen(port);
-    console.log(`Application is running on: http://localhost:${port}/api`);
+    console.log(`🚀 Backend running on port ${port}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { PromotionsService } from './promotions.service';
 import { PromotionsController } from './promotions.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { BusinessModule } from '../business/business.module';
-import { PromotionsCron } from './promotions.cron';
 
 @Module({
-  imports: [PrismaModule, BusinessModule],
+  imports: [PrismaModule, BusinessModule, NotificationsModule],
   controllers: [PromotionsController],
-  providers: [PromotionsService, PromotionsCron],
+  providers: [PromotionsService],
   exports: [PromotionsService],
 })
 export class PromotionsModule {}

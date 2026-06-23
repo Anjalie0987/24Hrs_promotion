@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils";
 interface BannerCardProps {
     banner: {
         id: string;
-        imageUrl: string;
+        originalImageUrl: string;
+        watermarkedImageUrl: string | null;
         title: string | null;
         createdAt: string;
     };
@@ -32,7 +33,7 @@ export default function BannerCard({ banner, onDelete }: BannerCardProps) {
             {/* Preview Area */}
             <div className="relative aspect-[9/16] w-full bg-slate-100 overflow-hidden">
                 <Image
-                    src={banner.imageUrl}
+                    src={banner.watermarkedImageUrl || banner.originalImageUrl}
                     alt={banner.title || "Business Banner"}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"

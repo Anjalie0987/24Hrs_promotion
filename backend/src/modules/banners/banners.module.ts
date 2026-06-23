@@ -7,6 +7,7 @@ import { BusinessModule } from '../business/business.module';
 @Module({
   imports: [PrismaModule, BusinessModule],
   controllers: [BannersController],
-  providers: [BannersService]
+  providers: [BannersService],
+  exports: [BannersService],
 })
 export class BannersModule {}

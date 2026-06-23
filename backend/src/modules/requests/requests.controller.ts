@@ -1,4 +1,14 @@
-import { Controller, Post, Get, Body, Param, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BusinessService } from '../business/business.service';
@@ -12,32 +22,57 @@ export class RequestsController {
   ) {}
 
   @Post('send')
-  async send(@Req() req, @Body() data: { receiverBusinessId: string; bannerId: string }) {
-    const business = await this.businessService.findMe(req.user.id);
+  async send(
+    @Req() req,
+    @Body() data: { receiverBusinessId: string; bannerId: string },
+  ) {
+    const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.send(business.id, data);
   }
 
   @Post('accept/:id')
   async accept(@Req() req, @Param('id') id: string) {
-    const business = await this.businessService.findMe(req.user.id);
+    const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.accept(id, business.id);
   }
 
   @Post('reject/:id')
   async reject(@Req() req, @Param('id') id: string) {
-    const business = await this.businessService.findMe(req.user.id);
+    const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.reject(id, business.id);
   }
 
+  @Delete('cancel/:id')
+  async cancel(@Req() req, @Param('id') id: string) {
+    const business = await this.businessService.findMe(req.user.userId);
+    return this.requestsService.cancel(id, business.id);
+  }
+
   @Get('incoming')
-  async findIncoming(@Req() req) {
-    const business = await this.businessService.findMe(req.user.id);
-    return this.requestsService.findIncoming(business.id);
+  async findIncoming(
+    @Req() req,
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+  ) {
+    const business = await this.businessService.findMe(req.user.userId);
+    return this.requestsService.findIncoming(
+      business.id,
+      skip ? parseInt(skip) : 0,
+      take ? parseInt(take) : 20,
+    );
   }
 
   @Get('sent')
-  async findSent(@Req() req) {
-    const business = await this.businessService.findMe(req.user.id);
-    return this.requestsService.findSent(business.id);
+  async findSent(
+    @Req() req,
+    @Query('skip') skip?: string,
+    @Query('take') take?: string,
+  ) {
+    const business = await this.businessService.findMe(req.user.userId);
+    return this.requestsService.findSent(
+      business.id,
+      skip ? parseInt(skip) : 0,
+      take ? parseInt(take) : 20,
+    );
   }
 }

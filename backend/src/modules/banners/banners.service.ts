@@ -1,14 +1,37 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UploadApiResponse } from 'cloudinary';
+
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class BannersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
 
-  async create(businessId: string, data: { imageUrl: string; title?: string }) {
+  async create(
+    businessId: string,
+    file: Express.Multer.File,
+    data: { title?: string },
+  ) {
+    const uploadResult: UploadApiResponse =
+      await this.cloudinary.uploadImage(file);
+    const originalImageUrl = uploadResult.secure_url;
+    const watermarkedImageUrl = this.cloudinary.getWatermarkedUrl(
+      uploadResult.public_id,
+    );
+
     return this.prisma.banner.create({
       data: {
-        ...data,
+        title: data.title,
+        originalImageUrl,
+        watermarkedImageUrl,
         businessId,
       },
     });

@@ -8,44 +8,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var PromotionsCron_1;
+var CleanupService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PromotionsCron = void 0;
+exports.CleanupService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../prisma/prisma.service");
-let PromotionsCron = PromotionsCron_1 = class PromotionsCron {
+let CleanupService = CleanupService_1 = class CleanupService {
     prisma;
-    logger = new common_1.Logger(PromotionsCron_1.name);
+    logger = new common_1.Logger(CleanupService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
     async handleCron() {
-        this.logger.debug('Checking for expired promotions...');
+        this.logger.log('Running OTP cleanup job...');
         const now = new Date();
-        const expired = await this.prisma.promotion.updateMany({
+        const expiredResult = await this.prisma.otp.deleteMany({
             where: {
-                status: 'ACTIVE',
-                endTime: { lt: now },
-            },
-            data: {
-                status: 'EXPIRED',
+                expiresAt: { lt: now },
             },
         });
-        if (expired.count > 0) {
-            this.logger.log(`Marked ${expired.count} promotions as EXPIRED`);
-        }
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const usedResult = await this.prisma.otp.deleteMany({
+            where: {
+                isUsed: true,
+                createdAt: { lt: oneDayAgo },
+            },
+        });
+        this.logger.log(`Cleanup complete: ${expiredResult.count} expired OTPs deleted, ${usedResult.count} old used OTPs deleted.`);
     }
 };
-exports.PromotionsCron = PromotionsCron;
+exports.CleanupService = CleanupService;
 __decorate([
-    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_MINUTE),
+    (0, schedule_1.Cron)(schedule_1.CronExpression.EVERY_HOUR),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], PromotionsCron.prototype, "handleCron", null);
-exports.PromotionsCron = PromotionsCron = PromotionsCron_1 = __decorate([
+], CleanupService.prototype, "handleCron", null);
+exports.CleanupService = CleanupService = CleanupService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
-], PromotionsCron);
-//# sourceMappingURL=promotions.cron.js.map
+], CleanupService);
+//# sourceMappingURL=cleanup.service.js.map

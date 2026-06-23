@@ -14,14 +14,25 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BusinessController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const business_service_1 = require("./business.service");
 const create_business_dto_1 = require("./dto/create-business.dto");
 const update_business_dto_1 = require("./dto/update-business.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 let BusinessController = class BusinessController {
     businessService;
-    constructor(businessService) {
+    cloudinaryService;
+    constructor(businessService, cloudinaryService) {
         this.businessService = businessService;
+        this.cloudinaryService = cloudinaryService;
+    }
+    async uploadImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
+        }
+        const uploadResult = await this.cloudinaryService.uploadImage(file, 'business_profiles');
+        return { secure_url: uploadResult.secure_url };
     }
     async create(req, dto) {
         return this.businessService.create(req.user.userId, dto);
@@ -38,14 +49,35 @@ let BusinessController = class BusinessController {
     async findAllAlias(req, query) {
         return this.businessService.findAll(req.user.userId, query);
     }
+    async getSavedPartners(req) {
+        return this.businessService.getSavedPartners(req.user.userId);
+    }
     async findAll(req, query) {
         return this.businessService.findAll(req.user.userId, query);
+    }
+    async savePartner(req, id) {
+        return this.businessService.savePartner(req.user.userId, id);
+    }
+    async unsavePartner(req, id) {
+        return this.businessService.unsavePartner(req.user.userId, id);
+    }
+    async getProfile(req, id) {
+        return this.businessService.getProfile(id, req.user.userId);
     }
     async findOne(id) {
         return this.businessService.findOne(id);
     }
 };
 exports.BusinessController = BusinessController;
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('upload-image'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('create'),
@@ -91,6 +123,14 @@ __decorate([
 ], BusinessController.prototype, "findAllAlias", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('saved'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "getSavedPartners", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)()),
@@ -98,6 +138,33 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(':id/save'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "savePartner", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)(':id/save'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "unsavePartner", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(':id/profile'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "getProfile", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -107,6 +174,7 @@ __decorate([
 ], BusinessController.prototype, "findOne", null);
 exports.BusinessController = BusinessController = __decorate([
     (0, common_1.Controller)('business'),
-    __metadata("design:paramtypes", [business_service_1.BusinessService])
+    __metadata("design:paramtypes", [business_service_1.BusinessService,
+        cloudinary_service_1.CloudinaryService])
 ], BusinessController);
 //# sourceMappingURL=business.controller.js.map

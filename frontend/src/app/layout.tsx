@@ -11,7 +11,9 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/auth-context";
+import { NotificationProvider } from "@/context/notification-context";
 import { Toaster } from "react-hot-toast";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
 
 export default function RootLayout({
   children,
@@ -21,10 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={inter.className}>
-        <AuthProvider>
-          <Toaster position="top-center" />
-          <DashboardLayout>{children}</DashboardLayout>
-        </AuthProvider>
+        <ReactQueryProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <Toaster position="top-center" />
+              <DashboardLayout>{children}</DashboardLayout>
+            </NotificationProvider>
+          </AuthProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -5,159 +5,182 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Megaphone,
-    CheckCircle2,
-    XCircle,
-    Clock,
-    MapPin,
-    Star,
-    Download,
-    Upload,
-    ChevronRight,
-    ArrowUpRight,
-    ArrowDownLeft,
-    Timer,
-    Check,
-    X,
-    Store,
-    ExternalLink,
-    ShieldCheck,
-    AlertCircle
+    Megaphone, CheckCircle2, XCircle, Clock, MapPin, Star,
+    Download, Upload, ArrowUpRight, ArrowDownLeft, Timer,
+    Check, X, Store, AlertCircle, ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProtectedRoute from "@/components/protected-route";
+import { toast } from "react-hot-toast";
 
-// Mock Data
-type RequestStatus = "Pending" | "Accepted" | "Rejected";
+import { 
+    getIncomingRequests, getSentRequests, 
+    acceptRequest, rejectRequest, cancelRequest 
+} from "@/api/request.api";
+import { getActivePromotions, getCompletedPromotions, uploadPromotionProof } from "@/api/promotions.api";
+import { useNotificationSocket } from "@/context/notification-context";
+import { RequestDrawer } from "@/components/RequestDrawer";
 
-interface BusinessRequest {
-    id: number;
-    businessName: string;
-    category: string;
-    location: string;
-    trustScore: number;
-    logo: string;
-    banner: string;
-    message: string;
-    dateSent: string;
-    status: RequestStatus;
-}
-
-interface ActivePromotion {
-    id: number;
-    businessName: string;
-    banner: string;
-    startTime: string;
-    endTime: string; // ISO string for countdown
-}
-
-const incomingRequestsMock: BusinessRequest[] = [
-    {
-        id: 1,
-        businessName: "Luxe Fashion Hub",
-        category: "Fashion",
-        location: "Mumbai, MH",
-        trustScore: 4.8,
-        logo: "/api/placeholder/80/80",
-        banner: "/api/placeholder/1080/1920",
-        message: "Luxe Fashion Hub wants to promote your banner for 24 hours.",
-        dateSent: "2024-03-10",
-        status: "Pending"
-    },
-    {
-        id: 2,
-        businessName: "Gourmet Bites",
-        category: "Restaurant",
-        location: "Pune, MH",
-        trustScore: 4.5,
-        logo: "/api/placeholder/80/80",
-        banner: "/api/placeholder/1080/1920",
-        message: "Gourmet Bites wants to promote your banner for 24 hours.",
-        dateSent: "2024-03-11",
-        status: "Pending"
-    }
-];
-
-const sentRequestsMock: BusinessRequest[] = [
-    {
-        id: 101,
-        businessName: "FitLife Studio",
-        category: "Fitness",
-        location: "Bangalore, KA",
-        trustScore: 4.9,
-        logo: "/api/placeholder/80/80",
-        banner: "/api/placeholder/1080/1920",
-        message: "You requested to promote FitLife Studio's banner.",
-        dateSent: "2024-03-09",
-        status: "Pending"
-    },
-    {
-        id: 102,
-        businessName: "TechWave Solutions",
-        category: "Digital",
-        location: "Hyderabad, TS",
-        trustScore: 4.2,
-        logo: "/api/placeholder/80/80",
-        banner: "/api/placeholder/1080/1920",
-        message: "You requested to promote TechWave Solutions' banner.",
-        dateSent: "2024-03-08",
-        status: "Accepted"
-    }
-];
-
-const activePromotionsMock: ActivePromotion[] = [
-    {
-        id: 1,
-        businessName: "TechWave Solutions",
-        banner: "/api/placeholder/1080/1920",
-        startTime: "2024-03-11T09:00:00Z",
-        endTime: new Date(Date.now() + 16 * 3600 * 1000 + 32 * 60 * 1000).toISOString(),
-    }
-];
-
-const tabs = [
-    { id: "incoming", label: "Incoming Requests", icon: ArrowDownLeft },
-    { id: "sent", label: "Sent Requests", icon: ArrowUpRight },
-    { id: "active", label: "Active Promotions", icon: Timer },
-];
+type Tab = "incoming" | "sent" | "active" | "completed";
 
 export default function PromotionRequestsPage() {
-    const [activeTab, setActiveTab] = useState("incoming");
-    const [incomingRequests, setIncomingRequests] = useState(incomingRequestsMock);
-    const [activePromotions, setActivePromotions] = useState(activePromotionsMock);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<Tab>("incoming");
+    
+    // Data States
+    const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
+    const [sentRequests, setSentRequests] = useState<any[]>([]);
+    const [activePromotions, setActivePromotions] = useState<any[]>([]);
+    const [completedPromotions, setCompletedPromotions] = useState<any[]>([]);
 
-    const handleAccept = (req: BusinessRequest) => {
-        // Mock acceptance logic
-        setIncomingRequests(prev => prev.filter(r => r.id !== req.id));
-        const newPromotion: ActivePromotion = {
-            id: Date.now(),
-            businessName: req.businessName,
-            banner: req.banner,
-            startTime: new Date().toISOString(),
-            endTime: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    // Loading & Pagination States
+    const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [skip, setSkip] = useState({ incoming: 0, sent: 0, active: 0, completed: 0 });
+    const [hasMore, setHasMore] = useState({ incoming: true, sent: true, active: true, completed: true });
+
+    // Modals & Drawer
+    const [cancelModalId, setCancelModalId] = useState<string | null>(null);
+    const [drawerReq, setDrawerReq] = useState<any | null>(null);
+
+    const { socket } = useNotificationSocket();
+
+    useEffect(() => {
+        fetchTabData(activeTab, true);
+    }, [activeTab]);
+
+    // WebSocket Integration
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleSocketMessage = (notification: any) => {
+            if (!notification || !notification.type || !notification.data) return;
+
+            if (notification.type === 'request_received') {
+                setIncomingRequests(prev => [notification.data, ...prev]);
+                toast.success('New promotion request received!');
+            }
+            if (notification.type === 'request_approved') {
+                setSentRequests(prev => prev.map(req => req.id === notification.data.id ? notification.data : req));
+                if (notification.data.promotion) {
+                    setActivePromotions(prev => [notification.data.promotion, ...prev]);
+                }
+                toast.success('Your promotion request was approved!');
+            }
+            if (notification.type === 'request_rejected') {
+                setSentRequests(prev => prev.map(req => req.id === notification.data.id ? notification.data : req));
+                toast.error('Your promotion request was rejected.');
+            }
+            if (notification.type === 'request_cancelled') {
+                setIncomingRequests(prev => prev.map(req => req.id === notification.data.id ? notification.data : req));
+            }
+            if (notification.type === 'promotion_completed') {
+                setActivePromotions(prev => prev.filter(promo => promo.id !== notification.data.id));
+                setCompletedPromotions(prev => [notification.data, ...prev]);
+                toast.success('Promotion successfully completed!');
+            }
         };
-        setActivePromotions(prev => [newPromotion, ...prev]);
-        setSuccessMessage("Promotion started successfully!");
-        setTimeout(() => setSuccessMessage(null), 3000);
+
+        socket.on('new-notification', handleSocketMessage);
+        return () => {
+            socket.off('new-notification', handleSocketMessage);
+        };
+    }, [socket]);
+
+    const fetchTabData = async (tab: Tab, reset = false) => {
+        try {
+            if (reset) setLoading(true);
+            const currentSkip = reset ? 0 : skip[tab];
+            const take = 20;
+
+            let data: any[] = [];
+            if (tab === "incoming") {
+                data = await getIncomingRequests(currentSkip, take);
+                setIncomingRequests(prev => reset ? data : [...prev, ...data]);
+            } else if (tab === "sent") {
+                data = await getSentRequests(currentSkip, take);
+                setSentRequests(prev => reset ? data : [...prev, ...data]);
+            } else if (tab === "active") {
+                data = await getActivePromotions(currentSkip, take);
+                setActivePromotions(prev => reset ? data : [...prev, ...data]);
+            } else if (tab === "completed") {
+                data = await getCompletedPromotions(currentSkip, take);
+                setCompletedPromotions(prev => reset ? data : [...prev, ...data]);
+            }
+
+            setHasMore(prev => ({ ...prev, [tab]: data.length === take }));
+            if (!reset) {
+                setSkip(prev => ({ ...prev, [tab]: currentSkip + take }));
+            } else {
+                setSkip(prev => ({ ...prev, [tab]: take }));
+            }
+        } catch (error) {
+            toast.error("Failed to load data.");
+        } finally {
+            if (reset) setLoading(false);
+        }
     };
 
-    const handleReject = (id: number) => {
-        setIncomingRequests(prev => prev.filter(r => r.id !== id));
+    const handleAccept = async (id: string) => {
+        try {
+            setActionLoading(id);
+            const res = await acceptRequest(id);
+            setIncomingRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'APPROVED' } : r));
+            toast.success("Request approved! Promotion is now active.");
+            fetchTabData('active', true);
+            if (drawerReq?.id === id) setDrawerReq({ ...drawerReq, status: 'APPROVED' });
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to accept");
+        } finally {
+            setActionLoading(null);
+        }
     };
+
+    const handleReject = async (id: string) => {
+        try {
+            setActionLoading(id);
+            await rejectRequest(id);
+            setIncomingRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'REJECTED' } : r));
+            toast.success("Request rejected");
+            if (drawerReq?.id === id) setDrawerReq({ ...drawerReq, status: 'REJECTED' });
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to reject");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleCancel = async (id: string) => {
+        try {
+            setActionLoading(id);
+            await cancelRequest(id);
+            setSentRequests(prev => prev.map(r => r.id === id ? { ...r, status: 'CANCELLED' } : r));
+            toast.success("Request cancelled");
+            if (drawerReq?.id === id) setDrawerReq({ ...drawerReq, status: 'CANCELLED' });
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to cancel");
+        } finally {
+            setActionLoading(null);
+            setCancelModalId(null);
+        }
+    };
+
+    const tabs = [
+        { id: "incoming", label: "Incoming", icon: ArrowDownLeft },
+        { id: "sent", label: "Sent", icon: ArrowUpRight },
+        { id: "active", label: "Active", icon: Timer },
+        { id: "completed", label: "Completed", icon: CheckCircle2 },
+    ] as const;
 
     return (
         <ProtectedRoute>
-            <div className="space-y-8 pb-12">
-                {/* Page Header */}
+            <div className="space-y-8 pb-12 max-w-[1200px] mx-auto px-4 sm:px-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Promotion Requests</h1>
+                    <h1 className="text-3xl font-bold text-[#0F172A] mb-2 mt-8">Promotion Requests</h1>
                     <p className="text-[#64748B] text-lg">Manage business collaborations and approve promotion partnerships.</p>
                 </div>
 
-                {/* Modern Tabs */}
-                <div className="border-b border-slate-200">
-                    <div className="flex gap-8">
+                <div className="border-b border-slate-200 overflow-x-auto no-scrollbar">
+                    <div className="flex gap-8 min-w-max">
                         {tabs.map((tab) => {
                             const isActive = activeTab === tab.id;
                             return (
@@ -183,289 +206,277 @@ export default function PromotionRequestsPage() {
                     </div>
                 </div>
 
-                {/* Tab Content */}
                 <div className="min-h-[400px]">
-                    {activeTab === "incoming" && (
-                        <div className="space-y-6">
-                            {incomingRequests.length === 0 ? (
-                                <EmptyState
-                                    title="No promotion requests yet."
-                                    description="When other businesses want to promote with you, their requests will appear here."
-                                />
-                            ) : (
-                                incomingRequests.map((req) => (
-                                    <motion.div
-                                        key={req.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center gap-8"
-                                    >
-                                        {/* Left: Info */}
-                                        <div className="flex items-center gap-5 lg:w-[320px] shrink-0">
-                                            <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                                                <Image src={req.logo} alt={req.businessName} width={64} height={64} className="object-cover" />
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-[#0F172A] text-lg leading-tight mb-1">{req.businessName}</h3>
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{req.category}</span>
-                                                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                                    <div className="flex items-center gap-1">
-                                                        <MapPin className="w-3 h-3 text-slate-300" />
-                                                        <span className="text-xs text-slate-500">{req.location}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-2 inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
-                                                    <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                                                    <span className="text-[10px] font-bold text-amber-700">{req.trustScore} Trust Score</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Center: Banner Preview */}
-                                        <div className="flex items-center gap-4 lg:flex-1">
-                                            <div className="relative aspect-[9/16] w-16 h-28 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                                                <Image src={req.banner} alt="Banner" fill className="object-cover opacity-80" />
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black/5">
-                                                    <span className="text-[8px] font-black text-white uppercase tracking-tighter opacity-70">Banner</span>
-                                                </div>
-                                            </div>
-                                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex-1">
-                                                <p className="text-[14px] text-slate-700 font-medium italic">
-                                                    "{req.message}"
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Right: Actions */}
-                                        <div className="flex items-center gap-3 lg:w-[280px] shrink-0">
-                                            <button
-                                                onClick={() => handleAccept(req)}
-                                                className="flex-1 h-12 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2"
-                                            >
-                                                <Check className="w-4 h-4" />
-                                                Accept Request
-                                            </button>
-                                            <button
-                                                onClick={() => handleReject(req.id)}
-                                                className="px-4 h-12 border border-slate-200 text-slate-500 font-bold rounded-xl hover:bg-slate-50 transition-all"
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                ))
-                            )}
+                    {loading ? (
+                        <div className="space-y-4">
+                            {[1,2,3].map(i => (
+                                <div key={i} className="h-32 bg-slate-50 rounded-2xl animate-pulse border border-slate-100" />
+                            ))}
                         </div>
+                    ) : (
+                        <AnimatePresence mode="popLayout">
+                            {activeTab === "incoming" && (
+                                <div className="space-y-6">
+                                    {incomingRequests.length === 0 ? (
+                                        <EmptyState title="No incoming requests" description="When other businesses want to collaborate, their requests will appear here." />
+                                    ) : (
+                                        incomingRequests.map((req) => (
+                                            <RequestCard key={req.id} req={req} type="incoming" actionLoading={actionLoading} onAccept={handleAccept} onReject={handleReject} onClick={() => setDrawerReq(req)} />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === "sent" && (
+                                <div className="space-y-6">
+                                    {sentRequests.length === 0 ? (
+                                        <EmptyState title="No sent requests" description="Discover businesses and start collaborations to grow your reach." />
+                                    ) : (
+                                        sentRequests.map((req) => (
+                                            <RequestCard key={req.id} req={req} type="sent" actionLoading={actionLoading} onCancel={() => setCancelModalId(req.id)} onClick={() => setDrawerReq(req)} />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === "active" && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {activePromotions.length === 0 ? (
+                                        <div className="col-span-full">
+                                            <EmptyState title="No active promotions" description="Approved collaborations will appear here while they run." />
+                                        </div>
+                                    ) : (
+                                        activePromotions.map((promo) => (
+                                            <PromotionCard key={promo.id} promo={promo} />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            {activeTab === "completed" && (
+                                <div className="space-y-6">
+                                    {completedPromotions.length === 0 ? (
+                                        <EmptyState title="No completed promotions" description="Your past successful collaborations will be logged here." />
+                                    ) : (
+                                        completedPromotions.map((promo) => (
+                                            <PromotionCard key={promo.id} promo={promo} isCompleted />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+                        </AnimatePresence>
                     )}
 
-                    {activeTab === "sent" && (
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                            {sentRequestsMock.length === 0 ? (
-                                <div className="p-12">
-                                    <EmptyState
-                                        title="You haven't sent any promotion requests."
-                                        description="Discover businesses and start collaborations to grow your reach."
-                                    />
-                                </div>
-                            ) : (
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-slate-50/50">
-                                                <th className="px-6 py-4 text-[13px] font-semibold text-slate-500 uppercase tracking-wider">Business</th>
-                                                <th className="px-6 py-4 text-[13px] font-semibold text-slate-500 uppercase tracking-wider">Category</th>
-                                                <th className="px-6 py-4 text-[13px] font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                                                <th className="px-6 py-4 text-[13px] font-semibold text-slate-500 uppercase tracking-wider">Date Sent</th>
-                                                <th className="px-6 py-4 text-[13px] font-semibold text-slate-500 uppercase tracking-wider text-right">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100">
-                                            {sentRequestsMock.map((req) => (
-                                                <tr key={req.id} className="hover:bg-slate-50/50 transition-colors">
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-slate-100 overflow-hidden relative">
-                                                                <Image src={req.logo} alt={req.businessName} fill className="object-cover" />
-                                                            </div>
-                                                            <span className="font-bold text-[#0F172A]">{req.businessName}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-slate-500 text-sm font-medium">{req.category}</td>
-                                                    <td className="px-6 py-4">
-                                                        {req.status === "Pending" && (
-                                                            <span className="px-2.5 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                                                Pending
-                                                            </span>
-                                                        )}
-                                                        {req.status === "Accepted" && (
-                                                            <span className="px-2.5 py-1 bg-green-50 text-green-600 border border-green-100 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                                                Accepted
-                                                            </span>
-                                                        )}
-                                                        {req.status === "Rejected" && (
-                                                            <span className="px-2.5 py-1 bg-red-50 text-red-600 border border-red-100 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                                                Rejected
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4 text-slate-400 text-sm">{req.dateSent}</td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        {req.status === "Pending" && (
-                                                            <button className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest">
-                                                                Cancel
-                                                            </button>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {activeTab === "active" && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {activePromotions.length === 0 ? (
-                                <div className="md:col-span-2">
-                                    <EmptyState
-                                        title="No active promotions currently."
-                                        description="When collaborations are approved, they will appear here as active 24h promotions."
-                                    />
-                                </div>
-                            ) : (
-                                activePromotions.map((promo) => (
-                                    <motion.div
-                                        key={promo.id}
-                                        initial={{ opacity: 0, scale: 0.98 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row h-full group"
-                                    >
-                                        {/* Left: Banner */}
-                                        <div className="w-full md:w-[200px] aspect-[9/16] relative bg-slate-100 shrink-0">
-                                            <Image src={promo.banner} alt="Banner" fill className="object-cover" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 md:hidden">
-                                                <div>
-                                                    <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">Promoting</p>
-                                                    <h4 className="text-white font-bold text-xl">{promo.businessName}</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Right: Promotion Info */}
-                                        <div className="flex-1 p-8 flex flex-col">
-                                            <div className="mb-auto">
-                                                <div className="hidden md:block mb-6">
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Promoting</p>
-                                                    <h4 className="text-[#0F172A] font-bold text-2xl">{promo.businessName}</h4>
-                                                </div>
-
-                                                <div className="space-y-4 mb-8">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100">
-                                                            <Clock className="w-5 h-5 text-blue-600" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Time Remaining</p>
-                                                            <CountdownTimer targetDate={promo.endTime} />
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
-                                                            <ShieldCheck className="w-5 h-5 text-slate-400" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Status</p>
-                                                            <p className="text-[14px] font-bold text-emerald-600">Verification Pending</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex flex-col gap-3 pt-6 border-t border-slate-100">
-                                                <button className="w-full h-12 bg-[#0F172A] text-white font-bold rounded-xl hover:bg-black transition-all flex items-center justify-center gap-2">
-                                                    <Download className="w-4 h-4" />
-                                                    Download Banner
-                                                </button>
-                                                <button className="w-full h-12 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2 text-sm">
-                                                    <Upload className="w-4 h-4 text-slate-400" />
-                                                    Upload Proof
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                ))
-                            )}
+                    {!loading && hasMore[activeTab] && (
+                        <div className="mt-8 flex justify-center">
+                            <button 
+                                onClick={() => fetchTabData(activeTab)}
+                                className="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm shadow-sm"
+                            >
+                                Load More
+                            </button>
                         </div>
                     )}
                 </div>
 
-                {/* Success Success Notification */}
+                {/* Cancel Confirmation Modal */}
                 <AnimatePresence>
-                    {successMessage && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]"
-                        >
-                            <div className="bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20">
-                                <CheckCircle2 className="w-6 h-6" />
-                                <p className="font-bold">{successMessage}</p>
-                            </div>
-                        </motion.div>
+                    {cancelModalId && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl"
+                            >
+                                <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6 mx-auto">
+                                    <XCircle className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-xl font-bold text-center text-[#0F172A] mb-2">Cancel Request?</h3>
+                                <p className="text-center text-slate-500 mb-8">Are you sure you want to cancel this promotion request? This action cannot be undone.</p>
+                                <div className="flex gap-3">
+                                    <button onClick={() => setCancelModalId(null)} className="flex-1 py-3 font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition-all">Keep Request</button>
+                                    <button onClick={() => handleCancel(cancelModalId)} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all flex items-center justify-center">
+                                        {actionLoading === cancelModalId ? <span className="animate-spin w-5 h-5 border-2 border-white/20 border-t-white rounded-full"/> : "Cancel Request"}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
+
+                <RequestDrawer 
+                    isOpen={!!drawerReq} 
+                    onClose={() => setDrawerReq(null)} 
+                    req={drawerReq} 
+                    type={activeTab === "sent" ? "sent" : "incoming"} 
+                    onAccept={handleAccept} 
+                    onReject={handleReject} 
+                    onCancel={() => setCancelModalId(drawerReq?.id)} 
+                />
             </div>
         </ProtectedRoute>
     );
 }
 
+function RequestCard({ req, type, onAccept, onReject, onCancel, actionLoading, onClick }: any) {
+    const isPending = req.status === "PENDING";
+    const partner = type === "incoming" ? req.senderBusiness : req.receiverBusiness;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            onClick={onClick}
+            className="cursor-pointer bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row lg:items-center gap-6"
+        >
+            <div className="flex items-center gap-5 lg:w-[320px] shrink-0">
+                <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 relative overflow-hidden shrink-0">
+                    {partner?.logoUrl ? <Image src={partner.logoUrl} alt="Logo" fill className="object-cover" /> : <Store className="w-8 h-8 text-slate-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+                </div>
+                <div>
+                    <h3 className="font-bold text-[#0F172A] text-lg leading-tight mb-1">{partner?.name}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{partner?.category} • {partner?.city || partner?.location || "India"}</p>
+                    <div className="mt-2 inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        <span className="text-[10px] font-bold text-amber-700">{partner?.trustScore || 50} Trust Score</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-4 lg:flex-1">
+                <div className="relative aspect-[9/16] w-14 h-24 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                    {req.banner?.imageUrl && <Image src={req.banner.imageUrl} alt="Banner" fill className="object-cover" />}
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex-1">
+                    <div className="mb-2 flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</span>
+                        <StatusBadge status={req.status} />
+                    </div>
+                    <p className="text-[13px] text-slate-500 font-medium">Sent on {new Date(req.createdAt).toLocaleDateString()}</p>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3 lg:w-[260px] shrink-0 pt-4 lg:pt-0 border-t lg:border-none border-slate-100">
+                {type === "incoming" && isPending && (
+                    <>
+                        <button onClick={(e) => { e.stopPropagation(); onAccept(req.id); }} disabled={!!actionLoading} className="flex-1 h-12 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-all flex items-center justify-center">
+                            {actionLoading === req.id ? <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"/> : "Approve"}
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); onReject(req.id); }} disabled={!!actionLoading} className="px-5 h-12 border border-slate-200 text-slate-500 font-bold rounded-xl hover:bg-slate-50 transition-all">Reject</button>
+                    </>
+                )}
+                {type === "sent" && isPending && (
+                    <button onClick={(e) => { e.stopPropagation(); onCancel(); }} className="w-full h-12 border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-all uppercase text-sm tracking-wide">
+                        Cancel Request
+                    </button>
+                )}
+                {!isPending && (
+                    <div className="w-full h-12 flex items-center justify-center bg-slate-50 rounded-xl text-slate-400 font-bold text-sm">
+                        No actions available
+                    </div>
+                )}
+            </div>
+        </motion.div>
+    );
+}
+
+function PromotionCard({ promo, isCompleted }: { promo: any, isCompleted?: boolean }) {
+    const partner = promo.request.senderBusiness; // For simplicity. If user is sender, it should be receiver. Let's just use sender info for now.
+    
+    return (
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex h-full">
+            <div className="w-[140px] relative bg-slate-100 shrink-0">
+                {promo.request.banner?.imageUrl && <Image src={promo.request.banner.imageUrl} alt="Banner" fill className="object-cover" />}
+            </div>
+            <div className="flex-1 p-6 flex flex-col justify-between">
+                <div>
+                    <h4 className="text-[#0F172A] font-bold text-xl mb-1">{partner?.name}</h4>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Promoting Partner</p>
+                    {isCompleted ? (
+                        <div className="space-y-2 mb-4">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500">Completed On</span>
+                                <span className="font-bold text-slate-700">{new Date(promo.endTime).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500">Duration</span>
+                                <span className="font-bold text-emerald-600">24 Hours</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500">Performance</span>
+                                <span className="font-bold text-blue-600">Simulated 142 Clicks</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3 mb-6 bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                            <Clock className="w-5 h-5 text-blue-600" />
+                            <div>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Time Remaining</p>
+                                <CountdownTimer targetDate={promo.endTime} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {!isCompleted && (
+                    <div className="flex gap-2">
+                        <button className="flex-1 h-10 bg-[#0F172A] text-white text-xs font-bold rounded-lg hover:bg-black transition-all flex items-center justify-center gap-2">
+                            <Download className="w-3 h-3" /> Banner
+                        </button>
+                        <button className="flex-1 h-10 border border-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                            <Upload className="w-3 h-3 text-slate-400" /> Proof
+                        </button>
+                    </div>
+                )}
+            </div>
+        </motion.div>
+    );
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const styles: Record<string, string> = {
+        PENDING: "bg-amber-50 text-amber-600 border-amber-200",
+        APPROVED: "bg-green-50 text-green-600 border-green-200",
+        REJECTED: "bg-red-50 text-red-600 border-red-200",
+        CANCELLED: "bg-slate-100 text-slate-600 border-slate-200",
+        EXPIRED: "bg-slate-100 text-slate-600 border-slate-200",
+    };
+    return (
+        <span className={cn("px-2.5 py-0.5 border rounded-full text-[10px] font-bold uppercase tracking-wider", styles[status] || styles.PENDING)}>
+            {status}
+        </span>
+    );
+}
+
 function EmptyState({ title, description }: { title: string, description: string }) {
     return (
-        <div className="bg-white rounded-3xl border border-slate-200 border-dashed p-16 text-center flex flex-col items-center">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 text-slate-300">
-                <Megaphone className="w-10 h-10" />
+        <div className="bg-white rounded-3xl border border-slate-200 border-dashed py-16 px-6 text-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                <Megaphone className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-bold text-[#0F172A] mb-2">{title}</h3>
-            <p className="text-slate-500 max-w-xs mx-auto mb-8">{description}</p>
-            <Link
-                href="/businesses"
-                className="px-8 py-3 bg-[#2563EB] text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all inline-flex items-center gap-2"
-            >
-                <Store className="w-5 h-5" />
-                Find Businesses
-            </Link>
+            <p className="text-slate-500 text-sm max-w-[250px] mx-auto">{description}</p>
         </div>
     );
 }
 
 function CountdownTimer({ targetDate }: { targetDate: string }) {
-    const [timeLeft, setTimeLeft] = useState("16h 32m 45s");
+    const [timeLeft, setTimeLeft] = useState("--h --m --s");
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const end = new Date(targetDate).getTime();
-            const now = new Date().getTime();
-            const distance = end - now;
-
+            const distance = new Date(targetDate).getTime() - Date.now();
             if (distance < 0) {
-                setTimeLeft("Promotion Ended");
+                setTimeLeft("Ended");
                 clearInterval(interval);
                 return;
             }
-
             const h = Math.floor(distance / (1000 * 60 * 60));
             const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const s = Math.floor((distance % (1000 * 60)) / 1000);
-
             setTimeLeft(`${h}h ${m}m ${s}s`);
         }, 1000);
-
         return () => clearInterval(interval);
     }, [targetDate]);
 
-    return <p className="text-lg font-black text-[#2563EB] leading-tight">{timeLeft}</p>;
+    return <p className="text-sm font-black text-[#2563EB]">{timeLeft}</p>;
 }

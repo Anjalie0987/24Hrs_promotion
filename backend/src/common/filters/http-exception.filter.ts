@@ -31,13 +31,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: typeof message === 'object' ? (message as any).message || message : message,
+      message:
+        typeof message === 'object'
+          ? (message as any).message || message
+          : message,
     };
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         `[${request.method}] ${request.url} - Error: ${
-          exception instanceof Error ? exception.message : JSON.stringify(exception)
+          exception instanceof Error
+            ? exception.message
+            : JSON.stringify(exception)
         }`,
         exception instanceof Error ? exception.stack : undefined,
       );

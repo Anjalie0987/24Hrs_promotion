@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BannersController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const banners_service_1 = require("./banners.service");
 const business_service_1 = require("../business/business.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
@@ -24,9 +25,12 @@ let BannersController = class BannersController {
         this.bannersService = bannersService;
         this.businessService = businessService;
     }
-    async upload(req, data) {
+    async upload(req, file, data) {
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
+        }
         const business = await this.businessService.findMe(req.user.userId);
-        return this.bannersService.create(business.id, data);
+        return this.bannersService.create(business.id, file, data);
     }
     async getMyBanners(req) {
         const business = await this.businessService.findMe(req.user.userId);
@@ -41,10 +45,12 @@ exports.BannersController = BannersController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BannersController.prototype, "upload", null);
 __decorate([

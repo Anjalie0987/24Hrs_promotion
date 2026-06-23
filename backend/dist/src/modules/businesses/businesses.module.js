@@ -16,7 +16,7 @@ exports.BusinessesModule = BusinessesModule;
 exports.BusinessesModule = BusinessesModule = __decorate([
     (0, common_1.Module)({
         controllers: [businesses_controller_1.BusinessesController],
-        providers: [businesses_service_1.BusinessesService]
+        providers: [businesses_service_1.BusinessesService],
     })
 ], BusinessesModule);
 //# sourceMappingURL=businesses.module.js.map

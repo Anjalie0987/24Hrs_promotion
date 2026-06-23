@@ -19,7 +19,8 @@ exports.BannersModule = BannersModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule, business_module_1.BusinessModule],
         controllers: [banners_controller_1.BannersController],
-        providers: [banners_service_1.BannersService]
+        providers: [banners_service_1.BannersService],
+        exports: [banners_service_1.BannersService],
     })
 ], BannersModule);
 //# sourceMappingURL=banners.module.js.map

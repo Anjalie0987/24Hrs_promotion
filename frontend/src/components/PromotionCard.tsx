@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle2, AlertCircle, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { uploadProof } from '@/api/promotion.api';
+import { uploadPromotionProof as uploadProof } from '@/api/promotions.api';
 import { toast } from 'react-hot-toast';
 
 interface PromotionCardProps {
