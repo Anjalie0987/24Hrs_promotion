@@ -1,10 +1,11 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import { BannersService } from './banners.service';
 import { BusinessService } from '../business/business.service';
 export declare class BannersController {
     private readonly bannersService;
     private readonly businessService;
     constructor(bannersService: BannersService, businessService: BusinessService);
-    upload(req: any, file: Express.Multer.File, data: {
+    upload(req: AuthenticatedRequest, file: Express.Multer.File, data: {
         title?: string;
     }): Promise<{
         id: string;
@@ -15,7 +16,7 @@ export declare class BannersController {
         title: string | null;
         businessId: string;
     }>;
-    getMyBanners(req: any): Promise<{
+    getMyBanners(req: AuthenticatedRequest): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -24,7 +25,7 @@ export declare class BannersController {
         title: string | null;
         businessId: string;
     }[]>;
-    delete(req: any, id: string): Promise<{
+    delete(req: AuthenticatedRequest, id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

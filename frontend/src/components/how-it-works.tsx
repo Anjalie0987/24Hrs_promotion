@@ -29,7 +29,7 @@ const steps = [
     },
     {
         title: "Track Real Engagement",
-        description: "Monitor clicks, QR scans, and performance directly from your dashboard.",
+        description: "Monitor clicks and performance directly from your dashboard.",
     },
 ];
 

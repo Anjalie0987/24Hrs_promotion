@@ -1,3 +1,4 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import {
   Controller,
   Get,
@@ -21,13 +22,11 @@ export class PromotionsController {
   @UseGuards(JwtAuthGuard)
   @Get('active')
   async findActive(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
-    const business = await this.businessService.findMe(
-      req.user.id || req.user.userId,
-    );
+    const business = await this.businessService.findMe(req.user.userId);
     return this.promotionsService.findActive(
       business.id,
       skip ? parseInt(skip) : 0,
@@ -38,13 +37,11 @@ export class PromotionsController {
   @UseGuards(JwtAuthGuard)
   @Get('completed')
   async findCompleted(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
-    const business = await this.businessService.findMe(
-      req.user.id || req.user.userId,
-    );
+    const business = await this.businessService.findMe(req.user.userId);
     return this.promotionsService.findCompleted(
       business.id,
       skip ? parseInt(skip) : 0,
@@ -55,7 +52,7 @@ export class PromotionsController {
   @UseGuards(JwtAuthGuard)
   @Post('upload-proof')
   async uploadProof(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @Body() dto: { promotionId: string; proofImageUrl: string },
   ) {
     const business = await this.businessService.findMe(req.user.userId);

@@ -50,11 +50,7 @@ export function Navbar() {
         router.push("/login");
     };
 
-    const publicLinks: NavItem[] = [
-        { name: "Home", href: "/" },
-        { name: "How It Works", href: "#how-it-works" },
-        { name: "Pricing", href: "#pricing" },
-    ];
+    const publicLinks: NavItem[] = [];
 
     const privateLinks: NavItem[] = [
         { name: "Home", href: "/", icon: Home },
@@ -92,7 +88,7 @@ export function Navbar() {
                                 className="relative w-10 h-10 rounded-xl overflow-hidden shadow-sm flex items-center justify-center bg-white"
                             >
                                 <img
-                                    src="/24HR_logo.jpg"
+                                    src="/24HR_logo.png"
                                     alt="Logo"
                                     className="w-full h-full object-contain"
                                 />

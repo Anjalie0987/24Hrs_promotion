@@ -59,14 +59,18 @@ model Business {
   location    String?
   instagram   String?
   whatsapp    String?
-  logoUrl     String?
-  bannerUrl   String?
-  trustScore  Int      @default(50)
+  logoUrl         String?
+  bannerUrl       String?
+  bannerTemplate  String?  @default("corporate")
+  trustScore      Int      @default(50)
   website     String?
   isVerified  Boolean  @default(false)
   city        String?
   state       String?
   isAvailable Boolean  @default(true)
+  ownerName       String?
+  ownerPhotoUrl   String?
+  yearsExperience Int?
 
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])

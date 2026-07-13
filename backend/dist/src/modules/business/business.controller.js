@@ -34,14 +34,14 @@ let BusinessController = class BusinessController {
         const uploadResult = await this.cloudinaryService.uploadImage(file, 'business_profiles');
         return { secure_url: uploadResult.secure_url };
     }
-    async create(req, dto) {
-        return this.businessService.create(req.user.userId, dto);
+    async create(req, dto, files) {
+        return this.businessService.create(req.user.userId, dto, files);
     }
     async findMe(req) {
         return this.businessService.findMe(req.user.userId);
     }
-    async update(req, dto) {
-        return this.businessService.update(req.user.userId, dto);
+    async update(req, dto, files) {
+        return this.businessService.update(req.user.userId, dto, files);
     }
     async getRecommended(req) {
         return this.businessService.getRecommended(req.user.userId);
@@ -64,6 +64,9 @@ let BusinessController = class BusinessController {
     async getProfile(req, id) {
         return this.businessService.getProfile(id, req.user.userId);
     }
+    async regenerateBanner(req, id) {
+        return this.businessService.regenerateBanner(req.user.userId, id);
+    }
     async findOne(id) {
         return this.businessService.findOne(id);
     }
@@ -81,10 +84,15 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('create'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'logo', maxCount: 1 },
+        { name: 'ownerPhoto', maxCount: 1 },
+    ])),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, create_business_dto_1.CreateBusinessDto]),
+    __metadata("design:paramtypes", [Object, create_business_dto_1.CreateBusinessDto, Object]),
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "create", null);
 __decorate([
@@ -98,10 +106,15 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Put)('update'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'logo', maxCount: 1 },
+        { name: 'ownerPhoto', maxCount: 1 },
+    ])),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_business_dto_1.UpdateBusinessDto]),
+    __metadata("design:paramtypes", [Object, update_business_dto_1.UpdateBusinessDto, Object]),
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "update", null);
 __decorate([
@@ -165,6 +178,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], BusinessController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(':id/regenerate-banner'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BusinessController.prototype, "regenerateBanner", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -49,10 +49,10 @@ export declare class AuthController {
                     businessId: string;
                 }[];
             } & {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -60,12 +60,16 @@ export declare class AuthController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             }) | null;
         };

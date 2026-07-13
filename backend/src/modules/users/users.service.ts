@@ -21,11 +21,27 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
     return result;
   }
 
-  async updateProfile(id: string, data: any) {
+  async updateProfile(
+    id: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      businessName?: string;
+      businessDescription?: string;
+      category?: string;
+      location?: string;
+      instagram?: string;
+      whatsapp?: string;
+      logo?: string;
+      logoUrl?: string;
+      bannerUrl?: string;
+    },
+  ) {
     const {
       firstName,
       lastName,

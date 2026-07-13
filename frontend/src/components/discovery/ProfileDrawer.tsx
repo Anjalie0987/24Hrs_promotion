@@ -281,13 +281,6 @@ export function ProfileDrawer({ business: initialBusiness, isOpen, onClose, onRe
                         color="bg-[#1E73E8]"
                       />
                       <InsightBar 
-                        icon={<ScanBarcode className="w-5 h-5 text-emerald-500" />}
-                        label="Average QR Scans"
-                        value={profile.metrics.avgQrScans}
-                        max={100}
-                        color="bg-emerald-500"
-                      />
-                      <InsightBar 
                         icon={<CheckCircle2 className="w-5 h-5 text-purple-500" />}
                         label="Promotion Completion Rate"
                         value={`${profile.metrics.completionRate}%`}

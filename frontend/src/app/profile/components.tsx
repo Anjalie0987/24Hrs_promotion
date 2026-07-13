@@ -92,7 +92,6 @@ export const PromotionStats = ({ stats }: { stats: any }) => {
     { title: "Active Now", value: stats?.activePromotions || 0, icon: PlayCircle, color: "text-indigo-600", bg: "bg-indigo-50" },
     { title: "Success Rate", value: `${stats?.completionRate || 0}%`, icon: ShieldCheck, color: "text-cyan-600", bg: "bg-cyan-50" },
     { title: "Total Clicks", value: stats?.totalClicks || 0, icon: ExternalLink, color: "text-violet-600", bg: "bg-violet-50" },
-    { title: "QR Scans", value: stats?.totalQrScans || 0, icon: Eye, color: "text-fuchsia-600", bg: "bg-fuchsia-50" },
     { title: "Downloads", value: stats?.totalBannerDownloads || 0, icon: Download, color: "text-orange-600", bg: "bg-orange-50" },
     { title: "Partners", value: stats?.totalPartners || 0, icon: Users, color: "text-rose-600", bg: "bg-rose-50" },
   ];

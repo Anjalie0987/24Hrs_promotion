@@ -85,7 +85,7 @@ export default function DiscoveryMarketplace() {
     if (token) {
       setFilters({ search: debouncedSearch });
     }
-  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (token) {

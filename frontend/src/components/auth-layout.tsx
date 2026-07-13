@@ -33,7 +33,7 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                 <div className="max-w-[440px] relative z-10">
                     <Link href="/" className="inline-block mb-10">
                         <Image
-                            src="/24HR_logo.jpg"
+                            src="/24HR_logo.png"
                             alt="24HR Status Promotion"
                             width={56}
                             height={56}
@@ -87,7 +87,7 @@ export function AuthLayout({ children, title, subtitle, description }: AuthLayou
                 <div className="lg:hidden mb-8">
                     <Link href="/">
                         <Image 
-                            src="/24HR_logo.jpg" 
+                            src="/24HR_logo.png" 
                             alt="Logo" 
                             width={48} 
                             height={48} 

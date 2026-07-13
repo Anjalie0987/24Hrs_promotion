@@ -2,17 +2,33 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
-  BadRequestException,
+  InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { BannerTemplateType } from './banner/banner.types';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { BannerService } from './banner/banner.service';
 
 @Injectable()
 export class BusinessService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly bannerService: BannerService,
+  ) {}
 
-  async create(userId: string, dto: CreateBusinessDto) {
+  async create(
+    userId: string,
+    dto: CreateBusinessDto,
+    files?: {
+      logo?: Express.Multer.File[];
+      ownerPhoto?: Express.Multer.File[];
+    },
+  ) {
     const existing = await this.prisma.business.findFirst({
       where: { userId },
     });
@@ -21,12 +37,152 @@ export class BusinessService {
       throw new ConflictException('Business already exists for this user');
     }
 
-    return this.prisma.business.create({
+    let logoUrl = dto.logoUrl;
+    let ownerPhotoUrl = dto.ownerPhotoUrl;
+
+    if (files?.logo?.[0]) {
+      const uploadResult = await this.cloudinaryService.uploadImage(
+        files.logo[0],
+        'business_profiles',
+      );
+      logoUrl = uploadResult.secure_url;
+    }
+
+    if (files?.ownerPhoto?.[0]) {
+      const uploadResult = await this.cloudinaryService.uploadImage(
+        files.ownerPhoto[0],
+        'business_profiles',
+      );
+      ownerPhotoUrl = uploadResult.secure_url;
+    }
+
+    const yearsExperience = dto.yearsExperience
+      ? Number(dto.yearsExperience)
+      : undefined;
+
+    const createdBusiness = await this.prisma.business.create({
       data: {
         ...dto,
+        logoUrl,
+        ownerPhotoUrl,
+        yearsExperience,
+        bannerUrl: null, // Temporarily store bannerUrl = null
         userId,
       },
     });
+
+    try {
+      const bannerBuffer = await this.bannerService.generateBusinessBanner(
+        {
+          name: createdBusiness.name,
+          category: createdBusiness.category,
+          description: createdBusiness.description || undefined,
+          location: createdBusiness.location || undefined,
+          whatsapp: createdBusiness.whatsapp || undefined,
+          website: createdBusiness.website || undefined,
+          yearsExperience: createdBusiness.yearsExperience || undefined,
+          logoUrl: createdBusiness.logoUrl || undefined,
+          ownerPhotoUrl: createdBusiness.ownerPhotoUrl || undefined,
+        },
+        createdBusiness.bannerTemplate as unknown as BannerTemplateType,
+      );
+
+      const publicId = `business-${createdBusiness.id}`;
+      const secureUrl = await this.cloudinaryService.uploadBuffer(
+        bannerBuffer,
+        'business-banners',
+        publicId,
+      );
+
+      const cacheBustedUrl = `${secureUrl}?t=${Date.now()}`;
+
+      // Save to My Banners list
+      await this.prisma.banner.create({
+        data: {
+          originalImageUrl: cacheBustedUrl,
+          watermarkedImageUrl: cacheBustedUrl,
+          title: `Generated Banner - ${new Date().toLocaleDateString()}`,
+          businessId: createdBusiness.id,
+        },
+      });
+
+      await this.prisma.business.update({
+        where: { id: createdBusiness.id },
+        data: { bannerUrl: cacheBustedUrl },
+      });
+
+      createdBusiness.bannerUrl = cacheBustedUrl;
+    } catch (error) {
+      console.error(
+        'Error generating/uploading banner for business:',
+        createdBusiness.id,
+        error,
+      );
+    }
+
+    return createdBusiness;
+  }
+
+  async regenerateBanner(userId: string, businessId: string) {
+    const business = await this.prisma.business.findUnique({
+      where: { id: businessId },
+    });
+
+    if (!business) {
+      throw new NotFoundException('Business not found');
+    }
+
+    if (business.userId !== userId) {
+      throw new ForbiddenException(
+        'You do not have permission to regenerate this banner',
+      );
+    }
+
+    try {
+      const bannerBuffer = await this.bannerService.generateBusinessBanner(
+        {
+          name: business.name,
+          category: business.category,
+          description: business.description || undefined,
+          location: business.location || undefined,
+          whatsapp: business.whatsapp || undefined,
+          website: business.website || undefined,
+          yearsExperience: business.yearsExperience || undefined,
+          logoUrl: business.logoUrl || undefined,
+          ownerPhotoUrl: business.ownerPhotoUrl || undefined,
+        },
+        business.bannerTemplate as unknown as BannerTemplateType,
+      );
+
+      const publicId = `business-${business.id}`;
+      const secureUrl = await this.cloudinaryService.uploadBuffer(
+        bannerBuffer,
+        'business-banners',
+        publicId,
+      );
+
+      const cacheBustedUrl = `${secureUrl}?t=${Date.now()}`;
+
+      // Save to My Banners list
+      await this.prisma.banner.create({
+        data: {
+          originalImageUrl: cacheBustedUrl,
+          watermarkedImageUrl: cacheBustedUrl,
+          title: `Generated Banner - ${new Date().toLocaleDateString()}`,
+          businessId: business.id,
+        },
+      });
+
+      return this.prisma.business.update({
+        where: { id: business.id },
+        data: { bannerUrl: cacheBustedUrl },
+      });
+    } catch (error) {
+      console.error('Failed to regenerate banner:', error);
+      throw new InternalServerErrorException(
+        'Failed to regenerate banner image',
+      );
+    }
   }
 
   async findMe(userId: string) {
@@ -53,7 +209,14 @@ export class BusinessService {
     return business;
   }
 
-  async update(userId: string, dto: UpdateBusinessDto) {
+  async update(
+    userId: string,
+    dto: UpdateBusinessDto,
+    files?: {
+      logo?: Express.Multer.File[];
+      ownerPhoto?: Express.Multer.File[];
+    },
+  ) {
     const business = await this.prisma.business.findFirst({
       where: { userId },
     });
@@ -62,13 +225,64 @@ export class BusinessService {
       throw new NotFoundException('Business not found');
     }
 
-    return this.prisma.business.update({
+    let logoUrl = dto.logoUrl;
+    let ownerPhotoUrl = dto.ownerPhotoUrl;
+
+    if (files?.logo?.[0]) {
+      const uploadResult = await this.cloudinaryService.uploadImage(
+        files.logo[0],
+        'business_profiles',
+      );
+      logoUrl = uploadResult.secure_url;
+    }
+
+    if (files?.ownerPhoto?.[0]) {
+      const uploadResult = await this.cloudinaryService.uploadImage(
+        files.ownerPhoto[0],
+        'business_profiles',
+      );
+      ownerPhotoUrl = uploadResult.secure_url;
+    }
+
+    const dataToUpdate: Prisma.BusinessUpdateInput = { ...dto };
+    if (logoUrl !== undefined) dataToUpdate.logoUrl = logoUrl;
+    if (ownerPhotoUrl !== undefined) dataToUpdate.ownerPhotoUrl = ownerPhotoUrl;
+
+    if (dto.yearsExperience !== undefined) {
+      dataToUpdate.yearsExperience = dto.yearsExperience
+        ? Number(dto.yearsExperience)
+        : null;
+    }
+
+    // Preserve existing bannerUrl by not overwriting it
+    if ('bannerUrl' in dataToUpdate) {
+      delete (dataToUpdate as { bannerUrl?: string }).bannerUrl;
+    }
+
+    await this.prisma.business.update({
       where: { id: business.id },
-      data: dto,
+      data: dataToUpdate,
     });
+
+    // Automatically regenerate the banner with the updated details
+    return this.regenerateBanner(userId, business.id);
   }
 
-  async findAll(excludeUserId: string, filters: any = {}) {
+  async findAll(
+    excludeUserId: string,
+    filters: {
+      search?: string;
+      category?: string;
+      city?: string;
+      state?: string;
+      minTrustScore?: string;
+      isVerified?: string;
+      hasWebsite?: string;
+      hasInstagram?: string;
+      skip?: string;
+      take?: string;
+    } = {},
+  ) {
     const {
       search,
       category,
@@ -128,8 +342,8 @@ export class BusinessService {
         },
       },
       orderBy: { name: 'asc' },
-      skip: parseInt(skip, 10) || 0,
-      take: parseInt(take, 10) || 12,
+      skip: Number(skip),
+      take: Number(take),
     });
 
     // Compute Metrics and Request Status
@@ -159,7 +373,7 @@ export class BusinessService {
             : 100;
 
         // Request status
-        let requestStatus: any = null;
+        let requestStatus: string | null = null;
         if (biz.sentRequests.length > 0 || biz.receivedRequests.length > 0) {
           const reqs = [...biz.sentRequests, ...biz.receivedRequests];
           requestStatus = reqs[0].status; // simplifying: just taking the first related request status
@@ -413,7 +627,7 @@ export class BusinessService {
     });
 
     // 5. Request Status
-    let requestStatus: any = null;
+    let requestStatus: string | null = null;
     if (myBusiness) {
       const activeReq = await this.prisma.promotionRequest.findFirst({
         where: {

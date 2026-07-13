@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2, Briefcase } from "lucide-react";
 import { getMyBusiness } from "@/api/business.api";
-import BusinessForm from "@/components/BusinessForm";
+import { BusinessForm } from "@/components/business/BusinessForm";
 import ProtectedRoute from "@/components/protected-route";
 
 export default function ProfileSetup() {

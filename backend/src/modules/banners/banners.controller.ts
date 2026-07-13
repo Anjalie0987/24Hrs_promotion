@@ -1,3 +1,4 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import {
   Controller,
   Get,
@@ -27,7 +28,7 @@ export class BannersController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
-    @Req() req: any,
+    @Req() req: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
     @Body() data: { title?: string },
   ) {
@@ -40,14 +41,14 @@ export class BannersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('my-banners')
-  async getMyBanners(@Req() req: any) {
+  async getMyBanners(@Req() req: AuthenticatedRequest) {
     const business = await this.businessService.findMe(req.user.userId);
     return this.bannersService.findAllByBusiness(business.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async delete(@Req() req: any, @Param('id') id: string) {
+  async delete(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const business = await this.businessService.findMe(req.user.userId);
     return this.bannersService.remove(id, business.id);
   }

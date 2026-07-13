@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { BusinessService } from '../business/business.service';
 import { BannersService } from '../banners/banners.service';
 import { RequestsService } from '../requests/requests.service';
 import { PromotionsService } from '../promotions/promotions.service';
+import { Business } from '@prisma/client';
 
 @Injectable()
 export class DashboardService {
@@ -19,10 +20,10 @@ export class DashboardService {
 
   async getSummary(userId: string) {
     // 1. Get Business
-    let business: any = null;
+    let business: Business | null = null;
     try {
       business = await this.businessService.findMe(userId);
-    } catch (e) {
+    } catch {
       // User might not have a business yet
       return { business: null };
     }

@@ -1,4 +1,16 @@
 import { PrismaService } from '../prisma/prisma.service';
+export interface ChartData {
+    date: string;
+    clicks: number;
+    scans: number;
+}
+export interface TimelineEvent {
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    date: Date;
+}
 export declare class AnalyticsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -12,7 +24,7 @@ export declare class AnalyticsService {
         totalBannerDownloads: number;
         trustScore: number;
     }>;
-    getChartData(businessId: string, days?: number): Promise<any[]>;
+    getChartData(businessId: string, days?: number): Promise<ChartData[]>;
     getPromotionsTable(businessId: string, skip?: number, take?: number): Promise<{
         items: {
             id: string;
@@ -30,7 +42,15 @@ export declare class AnalyticsService {
         skip: number;
         take: number;
     }>;
-    getTopPartners(businessId: string): Promise<any[]>;
+    getTopPartners(businessId: string): Promise<{
+        completionRate: number;
+        id: string;
+        name: string;
+        logoUrl: string | null;
+        totalPromotions: number;
+        completedPromotions: number;
+        totalClicks: number;
+    }[]>;
     getTopBanners(businessId: string): Promise<{
         id: string;
         imageUrl: string;
@@ -41,5 +61,5 @@ export declare class AnalyticsService {
         downloads: number;
     }[]>;
     getCsvExport(businessId: string): Promise<string>;
-    getActivityTimeline(businessId: string): Promise<any[]>;
+    getActivityTimeline(businessId: string): Promise<TimelineEvent[]>;
 }

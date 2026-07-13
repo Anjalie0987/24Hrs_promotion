@@ -1,8 +1,9 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import { DashboardService } from './dashboard.service';
 export declare class DashboardController {
     private readonly dashboardService;
     constructor(dashboardService: DashboardService);
-    getSummary(req: any): Promise<{
+    getSummary(req: AuthenticatedRequest): Promise<{
         business: null;
         banners?: undefined;
         requests?: undefined;
@@ -12,7 +13,30 @@ export declare class DashboardController {
         topPartners?: undefined;
         topBanners?: undefined;
     } | {
-        business: any;
+        business: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            category: string;
+            description: string | null;
+            location: string | null;
+            instagram: string | null;
+            whatsapp: string | null;
+            logoUrl: string | null;
+            bannerUrl: string | null;
+            bannerTemplate: string | null;
+            trustScore: number;
+            website: string | null;
+            isVerified: boolean;
+            city: string | null;
+            state: string | null;
+            isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
+            userId: string;
+        };
         banners: {
             id: string;
             createdAt: Date;
@@ -33,10 +57,10 @@ export declare class DashboardController {
                 businessId: string;
             };
             senderBusiness: {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -44,12 +68,16 @@ export declare class DashboardController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             };
         } & {
@@ -72,10 +100,10 @@ export declare class DashboardController {
                     businessId: string;
                 };
                 senderBusiness: {
+                    name: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
                     category: string;
                     description: string | null;
                     location: string | null;
@@ -83,19 +111,23 @@ export declare class DashboardController {
                     whatsapp: string | null;
                     logoUrl: string | null;
                     bannerUrl: string | null;
+                    bannerTemplate: string | null;
                     trustScore: number;
                     website: string | null;
                     isVerified: boolean;
                     city: string | null;
                     state: string | null;
                     isAvailable: boolean;
+                    ownerName: string | null;
+                    ownerPhotoUrl: string | null;
+                    yearsExperience: number | null;
                     userId: string;
                 };
                 receiverBusiness: {
+                    name: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    name: string;
                     category: string;
                     description: string | null;
                     location: string | null;
@@ -103,12 +135,16 @@ export declare class DashboardController {
                     whatsapp: string | null;
                     logoUrl: string | null;
                     bannerUrl: string | null;
+                    bannerTemplate: string | null;
                     trustScore: number;
                     website: string | null;
                     isVerified: boolean;
                     city: string | null;
                     state: string | null;
                     isAvailable: boolean;
+                    ownerName: string | null;
+                    ownerPhotoUrl: string | null;
+                    yearsExperience: number | null;
                     userId: string;
                 };
             } & {
@@ -139,8 +175,16 @@ export declare class DashboardController {
             totalBannerDownloads: number;
             trustScore: number;
         };
-        chart: any[];
-        topPartners: any[];
+        chart: import("../analytics/analytics.service").ChartData[];
+        topPartners: {
+            completionRate: number;
+            id: string;
+            name: string;
+            logoUrl: string | null;
+            totalPromotions: number;
+            completedPromotions: number;
+            totalClicks: number;
+        }[];
         topBanners: {
             id: string;
             imageUrl: string;

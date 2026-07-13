@@ -30,7 +30,7 @@ let TrackingController = class TrackingController {
             const redirectUrl = await this.trackingService.trackClick(promotionId, reqInfo);
             return res.redirect(redirectUrl);
         }
-        catch (error) {
+        catch {
             const fallbackUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
             return res.redirect(fallbackUrl);
         }
@@ -44,7 +44,7 @@ let TrackingController = class TrackingController {
             const redirectUrl = await this.trackingService.trackQrScan(promotionId, reqInfo);
             return res.redirect(redirectUrl);
         }
-        catch (error) {
+        catch {
             const fallbackUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
             return res.redirect(fallbackUrl);
         }

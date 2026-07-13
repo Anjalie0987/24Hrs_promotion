@@ -1,14 +1,22 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { BannerService } from './banner/banner.service';
 export declare class BusinessService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
-    create(userId: string, dto: CreateBusinessDto): Promise<{
+    private readonly cloudinaryService;
+    private readonly bannerService;
+    constructor(prisma: PrismaService, cloudinaryService: CloudinaryService, bannerService: BannerService);
+    create(userId: string, dto: CreateBusinessDto, files?: {
+        logo?: Express.Multer.File[];
+        ownerPhoto?: Express.Multer.File[];
+    }): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -16,19 +24,47 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
+        userId: string;
+    }>;
+    regenerateBanner(userId: string, businessId: string): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        bannerTemplate: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
     findMe(userId: string): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -36,19 +72,23 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
     findOne(id: string): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -56,19 +96,26 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
-    update(userId: string, dto: UpdateBusinessDto): Promise<{
+    update(userId: string, dto: UpdateBusinessDto, files?: {
+        logo?: Express.Multer.File[];
+        ownerPhoto?: Express.Multer.File[];
+    }): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -76,20 +123,35 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
-    findAll(excludeUserId: string, filters?: any): Promise<{
+    findAll(excludeUserId: string, filters?: {
+        search?: string;
+        category?: string;
+        city?: string;
+        state?: string;
+        minTrustScore?: string;
+        isVerified?: string;
+        hasWebsite?: string;
+        hasInstagram?: string;
+        skip?: string;
+        take?: string;
+    }): Promise<{
         metrics: {
             completedPromotions: number;
             successRate: number;
         };
-        requestStatus: any;
+        requestStatus: string | null;
         banners: {
             id: string;
             createdAt: Date;
@@ -115,10 +177,10 @@ export declare class BusinessService {
             receiverBusinessId: string;
             bannerId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -126,19 +188,23 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }[]>;
     incrementTrustScore(id: string, amount: number): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -146,12 +212,16 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     } | undefined>;
     getRecommended(userId: string): Promise<{
@@ -166,10 +236,10 @@ export declare class BusinessService {
             title: string | null;
             businessId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -177,12 +247,16 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }[]>;
     savePartner(userId: string, businessId: string): Promise<{
@@ -191,7 +265,7 @@ export declare class BusinessService {
         userId: string;
         businessId: string;
     }>;
-    unsavePartner(userId: string, businessId: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
+    unsavePartner(userId: string, businessId: string): Promise<Prisma.BatchPayload>;
     getSavedPartners(userId: string): Promise<({
         banners: {
             id: string;
@@ -203,10 +277,10 @@ export declare class BusinessService {
             businessId: string;
         }[];
     } & {
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -214,12 +288,16 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     })[]>;
     getProfile(businessId: string, currentUserId: string): Promise<{
@@ -242,10 +320,10 @@ export declare class BusinessService {
                 businessId: string;
             }[];
         } & {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -253,18 +331,22 @@ export declare class BusinessService {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         })[];
         recentActivity: any[];
         matchScore: number;
         matchReason: string;
-        requestStatus: any;
+        requestStatus: string | null;
         banners: {
             id: string;
             createdAt: Date;
@@ -274,10 +356,10 @@ export declare class BusinessService {
             title: string | null;
             businessId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -285,12 +367,16 @@ export declare class BusinessService {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
     private getComplementaryMap;

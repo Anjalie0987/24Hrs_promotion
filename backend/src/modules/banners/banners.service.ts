@@ -38,10 +38,30 @@ export class BannersService {
   }
 
   async findAllByBusiness(businessId: string) {
-    return this.prisma.banner.findMany({
+    const banners = await this.prisma.banner.findMany({
       where: { businessId },
       orderBy: { createdAt: 'desc' },
     });
+
+    if (banners.length === 0) {
+      const business = await this.prisma.business.findUnique({
+        where: { id: businessId },
+      });
+
+      if (business && business.bannerUrl) {
+        const newBanner = await this.prisma.banner.create({
+          data: {
+            originalImageUrl: business.bannerUrl,
+            watermarkedImageUrl: business.bannerUrl,
+            title: 'Business Generated Banner',
+            businessId: business.id,
+          },
+        });
+        return [newBanner];
+      }
+    }
+
+    return banners;
   }
 
   async remove(id: string, businessId: string) {

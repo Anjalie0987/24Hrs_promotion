@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -184,7 +185,7 @@ export class PromotionsService {
       throw new BadRequestException('You are not part of this promotion');
     }
 
-    const updateData: any = {};
+    const updateData: Prisma.PromotionUpdateInput = {};
     if (isSender) updateData.senderProof = proofImageUrl;
     if (isReceiver) updateData.receiverProof = proofImageUrl;
 

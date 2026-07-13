@@ -1,12 +1,13 @@
 import { AnalyticsService } from './analytics.service';
 import type { Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 export declare class AnalyticsController {
     private readonly analyticsService;
     private readonly prisma;
     constructor(analyticsService: AnalyticsService, prisma: PrismaService);
     private getBusinessId;
-    getOverview(req: any): Promise<{
+    getOverview(req: AuthenticatedRequest): Promise<{
         totalPromotions: number;
         activePromotions: number;
         completedPromotions: number;
@@ -16,8 +17,8 @@ export declare class AnalyticsController {
         totalBannerDownloads: number;
         trustScore: number;
     }>;
-    getChartData(req: any, days: string): Promise<any[]>;
-    getPromotionsTable(req: any, skip?: string, take?: string): Promise<{
+    getChartData(req: AuthenticatedRequest, days: string): Promise<import("./analytics.service").ChartData[]>;
+    getPromotionsTable(req: AuthenticatedRequest, skip?: string, take?: string): Promise<{
         items: {
             id: string;
             partnerName: string;
@@ -34,8 +35,16 @@ export declare class AnalyticsController {
         skip: number;
         take: number;
     }>;
-    getTopPartners(req: any): Promise<any[]>;
-    getTopBanners(req: any): Promise<{
+    getTopPartners(req: AuthenticatedRequest): Promise<{
+        completionRate: number;
+        id: string;
+        name: string;
+        logoUrl: string | null;
+        totalPromotions: number;
+        completedPromotions: number;
+        totalClicks: number;
+    }[]>;
+    getTopBanners(req: AuthenticatedRequest): Promise<{
         id: string;
         imageUrl: string;
         title: string | null;
@@ -44,6 +53,6 @@ export declare class AnalyticsController {
         scans: number;
         downloads: number;
     }[]>;
-    exportCsv(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
-    getActivityTimeline(req: any): Promise<any[]>;
+    exportCsv(req: AuthenticatedRequest, res: Response): Promise<Response<any, Record<string, any>>>;
+    getActivityTimeline(req: AuthenticatedRequest): Promise<import("./analytics.service").TimelineEvent[]>;
 }

@@ -9,5 +9,5 @@ export declare class NotificationsGateway implements OnGatewayConnection, OnGate
     constructor(jwtService: JwtService, configService: ConfigService);
     handleConnection(client: Socket): Promise<void>;
     handleDisconnect(client: Socket): void;
-    sendNotificationToUser(userId: string, notification: any): void;
+    sendNotificationToUser(userId: string, notification: Record<string, unknown>): void;
 }

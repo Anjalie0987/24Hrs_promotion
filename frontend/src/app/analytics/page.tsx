@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h2 className="text-xl font-bold text-[#0F172A]">Engagement Trends</h2>
-                            <p className="text-sm text-[#64748B]">Last 30 Days of Clicks and QR Scans</p>
+                            <p className="text-sm text-[#64748B]">Last 30 Days of Clicks</p>
                         </div>
                         <div className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 flex items-center gap-2">
                             <Filter className="w-4 h-4" />
@@ -152,7 +152,6 @@ export default function AnalyticsPage() {
                                     <th className="p-4">Banner</th>
                                     <th className="p-4">Status</th>
                                     <th className="p-4 text-right">Clicks</th>
-                                    <th className="p-4 text-right">QR Scans</th>
                                     <th className="p-4">Start Date</th>
                                     <th className="p-4 text-center">Action</th>
                                 </tr>
@@ -203,7 +202,6 @@ export default function AnalyticsPage() {
                                                 </span>
                                             </td>
                                             <td className="p-4 text-right font-bold text-blue-600">{promo.clicks}</td>
-                                            <td className="p-4 text-right font-bold text-emerald-600">{promo.scans}</td>
                                             <td className="p-4 text-sm text-slate-500">
                                                 {new Date(promo.startDate).toLocaleDateString()}
                                             </td>

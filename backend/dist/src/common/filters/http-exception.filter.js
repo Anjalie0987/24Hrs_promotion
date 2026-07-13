@@ -25,7 +25,7 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             statusCode: status,
             timestamp: new Date().toISOString(),
             path: request.url,
-            message: typeof message === 'object'
+            message: typeof message === 'object' && message !== null && 'message' in message
                 ? message.message || message
                 : message,
         };

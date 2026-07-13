@@ -35,11 +35,11 @@ let NotificationsGateway = class NotificationsGateway {
             if (!userId) {
                 throw new Error('Invalid token payload');
             }
-            client.join(userId);
+            void client.join(userId);
             console.log(`Client authenticated and joined room ${userId}: ${client.id}`);
         }
         catch (error) {
-            console.log(`Client failed authentication: ${client.id} - ${error.message}`);
+            console.log(`Client failed authentication: ${client.id} - ${error instanceof Error ? error.message : String(error)}`);
             client.disconnect();
         }
     }

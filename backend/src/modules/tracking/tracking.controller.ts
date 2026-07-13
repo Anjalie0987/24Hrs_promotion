@@ -11,6 +11,7 @@ import {
 import { TrackingService } from './tracking.service';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 
 @Controller('tracking')
 export class TrackingController {
@@ -33,7 +34,7 @@ export class TrackingController {
         reqInfo,
       );
       return res.redirect(redirectUrl);
-    } catch (error) {
+    } catch {
       // Fallback redirect if something goes wrong
       const fallbackUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
       return res.redirect(fallbackUrl);
@@ -57,7 +58,7 @@ export class TrackingController {
         reqInfo,
       );
       return res.redirect(redirectUrl);
-    } catch (error) {
+    } catch {
       const fallbackUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
       return res.redirect(fallbackUrl);
     }
@@ -67,7 +68,7 @@ export class TrackingController {
   @Post('download/:id')
   async trackDownload(
     @Param('id') promotionId: string,
-    @NestRequest() req: any,
+    @NestRequest() req: AuthenticatedRequest,
   ) {
     const userId = req.user.userId;
     const result = await this.trackingService.trackBannerDownload(

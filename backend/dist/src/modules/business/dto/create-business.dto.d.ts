@@ -6,5 +6,8 @@ export declare class CreateBusinessDto {
     instagram?: string;
     whatsapp?: string;
     logoUrl?: string;
-    bannerUrl?: string;
+    ownerName?: string;
+    ownerPhotoUrl?: string;
+    yearsExperience?: number;
+    website?: string;
 }

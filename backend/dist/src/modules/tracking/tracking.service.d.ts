@@ -6,8 +6,14 @@ export declare class TrackingService {
     private readonly logger;
     private readonly frontendUrl;
     constructor(prisma: PrismaService, notificationsGateway: NotificationsGateway);
-    trackClick(promotionId: string, reqInfo: any): Promise<string>;
-    trackQrScan(promotionId: string, reqInfo: any): Promise<string>;
+    trackClick(promotionId: string, reqInfo: {
+        userAgent?: string;
+        ipAddress?: string | null;
+    }): Promise<string>;
+    trackQrScan(promotionId: string, reqInfo: {
+        userAgent?: string;
+        ipAddress?: string | null;
+    }): Promise<string>;
     trackBannerDownload(promotionId: string, userId: string): Promise<{
         id: string;
         createdAt: Date;

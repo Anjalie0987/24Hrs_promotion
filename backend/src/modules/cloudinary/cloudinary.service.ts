@@ -30,12 +30,51 @@ export class CloudinaryService {
                 ),
               );
             if (!result) {
-              return reject(new InternalServerErrorException('Cloudinary Error: No result returned'));
+              return reject(
+                new InternalServerErrorException(
+                  'Cloudinary Error: No result returned',
+                ),
+              );
             }
             resolve(result);
           },
         )
         .end(file.buffer);
+    });
+  }
+
+  async uploadBuffer(
+    buffer: Buffer,
+    folder: string = 'business-banners',
+    publicId?: string,
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder,
+            resource_type: 'auto',
+            public_id: publicId,
+            overwrite: true,
+          },
+          (error, result) => {
+            if (error)
+              return reject(
+                new InternalServerErrorException(
+                  'Cloudinary Error: ' + error.message,
+                ),
+              );
+            if (!result) {
+              return reject(
+                new InternalServerErrorException(
+                  'Cloudinary Error: No result returned',
+                ),
+              );
+            }
+            resolve(result.secure_url);
+          },
+        )
+        .end(buffer);
     });
   }
 

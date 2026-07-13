@@ -3,9 +3,6 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
@@ -30,14 +27,17 @@ export class NotificationsGateway
   async handleConnection(client: Socket) {
     try {
       const token =
-        client.handshake.auth?.token ||
+        (client.handshake.auth?.token as string | undefined) ||
         client.handshake.headers?.authorization?.split(' ')[1];
       if (!token) {
         throw new Error('No token provided');
       }
 
       const secret = this.configService.get<string>('JWT_SECRET');
-      const payload = await this.jwtService.verifyAsync(token, { secret });
+      const payload = await this.jwtService.verifyAsync<{
+        sub?: string;
+        id?: string;
+      }>(token, { secret });
 
       const userId = payload.sub || payload.id;
 
@@ -46,13 +46,15 @@ export class NotificationsGateway
       }
 
       // Automatically join the authenticated user's room
-      client.join(userId);
+      void client.join(userId);
       console.log(
         `Client authenticated and joined room ${userId}: ${client.id}`,
       );
     } catch (error) {
       console.log(
-        `Client failed authentication: ${client.id} - ${error.message}`,
+        `Client failed authentication: ${client.id} - ${
+          error instanceof Error ? error.message : String(error)
+        }`,
       );
       client.disconnect();
     }
@@ -65,7 +67,10 @@ export class NotificationsGateway
   // Remove the old unauthenticated 'join' handler completely.
   // Clients shouldn't be able to manually join arbitrary rooms.
 
-  sendNotificationToUser(userId: string, notification: any) {
+  sendNotificationToUser(
+    userId: string,
+    notification: Record<string, unknown>,
+  ) {
     this.server.to(userId).emit('new-notification', notification);
   }
 }

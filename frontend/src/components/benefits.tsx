@@ -33,7 +33,7 @@ const benefits = [
     {
         icon: BarChart3,
         title: "Measurable Results",
-        description: "Track clicks, QR scans, and real engagement.",
+        description: "Track clicks and real engagement.",
         featured: true
     },
     {

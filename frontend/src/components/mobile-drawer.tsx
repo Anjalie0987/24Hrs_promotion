@@ -13,11 +13,7 @@ interface MobileDrawerProps {
 }
 
 export function MobileDrawer({ isOpen, onClose, isLoggedIn, onLogout }: MobileDrawerProps) {
-    const publicLinks = [
-        { name: "Home", href: "/", icon: Home },
-        { name: "How It Works", href: "#how-it-works", icon: Info },
-        { name: "Pricing", href: "#pricing", icon: Tag },
-    ];
+    const publicLinks: { name: string; href: string; icon: any }[] = [];
 
     const privateLinks = [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -58,7 +54,7 @@ export function MobileDrawer({ isOpen, onClose, isLoggedIn, onLogout }: MobileDr
                                 >
                                     <div className="w-10 h-10 rounded-xl overflow-hidden border border-white/40 shadow-sm flex items-center justify-center bg-white">
                                         <img
-                                            src="/24HR_logo.jpg"
+                                            src="/24HR_logo.png"
                                             alt="Logo"
                                             className="w-full h-full object-contain"
                                         />

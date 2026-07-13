@@ -25,11 +25,11 @@ let PromotionsController = class PromotionsController {
         this.businessService = businessService;
     }
     async findActive(req, skip, take) {
-        const business = await this.businessService.findMe(req.user.id || req.user.userId);
+        const business = await this.businessService.findMe(req.user.userId);
         return this.promotionsService.findActive(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
     }
     async findCompleted(req, skip, take) {
-        const business = await this.businessService.findMe(req.user.id || req.user.userId);
+        const business = await this.businessService.findMe(req.user.userId);
         return this.promotionsService.findCompleted(business.id, skip ? parseInt(skip) : 0, take ? parseInt(take) : 20);
     }
     async uploadProof(req, dto) {

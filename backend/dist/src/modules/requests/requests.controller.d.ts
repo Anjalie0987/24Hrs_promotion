@@ -1,10 +1,11 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import { RequestsService } from './requests.service';
 import { BusinessService } from '../business/business.service';
 export declare class RequestsController {
     private readonly requestsService;
     private readonly businessService;
     constructor(requestsService: RequestsService, businessService: BusinessService);
-    send(req: any, data: {
+    send(req: AuthenticatedRequest, data: {
         receiverBusinessId: string;
         bannerId: string;
     }): Promise<{
@@ -18,10 +19,10 @@ export declare class RequestsController {
             businessId: string;
         };
         senderBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -29,19 +30,23 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
         receiverBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -49,12 +54,16 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
     } & {
@@ -65,12 +74,12 @@ export declare class RequestsController {
         receiverBusinessId: string;
         bannerId: string;
     }>;
-    accept(req: any, id: string): Promise<{
+    accept(req: AuthenticatedRequest, id: string): Promise<{
         senderBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -78,19 +87,23 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
         receiverBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -98,12 +111,16 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
     } & {
@@ -114,12 +131,12 @@ export declare class RequestsController {
         receiverBusinessId: string;
         bannerId: string;
     }>;
-    reject(req: any, id: string): Promise<{
+    reject(req: AuthenticatedRequest, id: string): Promise<{
         senderBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -127,12 +144,16 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
     } & {
@@ -143,7 +164,7 @@ export declare class RequestsController {
         receiverBusinessId: string;
         bannerId: string;
     }>;
-    cancel(req: any, id: string): Promise<{
+    cancel(req: AuthenticatedRequest, id: string): Promise<{
         id: string;
         createdAt: Date;
         status: import("@prisma/client").$Enums.RequestStatus;
@@ -151,7 +172,7 @@ export declare class RequestsController {
         receiverBusinessId: string;
         bannerId: string;
     }>;
-    findIncoming(req: any, skip?: string, take?: string): Promise<({
+    findIncoming(req: AuthenticatedRequest, skip?: string, take?: string): Promise<({
         banner: {
             id: string;
             createdAt: Date;
@@ -162,10 +183,10 @@ export declare class RequestsController {
             businessId: string;
         };
         senderBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -173,12 +194,16 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
     } & {
@@ -189,7 +214,7 @@ export declare class RequestsController {
         receiverBusinessId: string;
         bannerId: string;
     })[]>;
-    findSent(req: any, skip?: string, take?: string): Promise<({
+    findSent(req: AuthenticatedRequest, skip?: string, take?: string): Promise<({
         banner: {
             id: string;
             createdAt: Date;
@@ -200,10 +225,10 @@ export declare class RequestsController {
             businessId: string;
         };
         receiverBusiness: {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -211,12 +236,16 @@ export declare class RequestsController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         };
     } & {

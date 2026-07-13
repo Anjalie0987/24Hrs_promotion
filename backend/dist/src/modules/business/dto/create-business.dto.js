@@ -19,7 +19,10 @@ class CreateBusinessDto {
     instagram;
     whatsapp;
     logoUrl;
-    bannerUrl;
+    ownerName;
+    ownerPhotoUrl;
+    yearsExperience;
+    website;
 }
 exports.CreateBusinessDto = CreateBusinessDto;
 __decorate([
@@ -61,5 +64,19 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateBusinessDto.prototype, "bannerUrl", void 0);
+], CreateBusinessDto.prototype, "ownerName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateBusinessDto.prototype, "ownerPhotoUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateBusinessDto.prototype, "yearsExperience", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateBusinessDto.prototype, "website", void 0);
 //# sourceMappingURL=create-business.dto.js.map

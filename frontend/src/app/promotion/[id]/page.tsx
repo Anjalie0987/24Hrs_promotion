@@ -157,9 +157,6 @@ export default function ActivePromotionPage() {
                             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-8">
                                 <div className="text-white text-center">
                                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-2">Automated Watermark Included</p>
-                                    <div className="flex justify-center">
-                                        <QrCode className="w-12 h-12 opacity-90" />
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -168,22 +165,16 @@ export default function ActivePromotionPage() {
                     {/* Tracking Section */}
                     <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-lg font-bold text-[#0F172A] mb-6">Promotion Tracking</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                                <p className="text-[13px] text-slate-500 leading-relaxed">
-                                    Use this link or QR code if someone asks for more information about the promotion. All clicks are automatically tracked.
-                                </p>
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Promotion Link</label>
-                                    <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                                        <ExternalLink className="w-4 h-4 text-slate-400 shrink-0" />
-                                        <span className="text-sm font-semibold truncate text-blue-600">{promotionData.trackingLink}</span>
-                                    </div>
+                        <div className="space-y-4">
+                            <p className="text-[13px] text-slate-500 leading-relaxed">
+                                Use this link if someone asks for more information about the promotion. All clicks are automatically tracked.
+                            </p>
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Promotion Link</label>
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                    <ExternalLink className="w-4 h-4 text-slate-400 shrink-0" />
+                                    <span className="text-sm font-semibold truncate text-blue-600">{promotionData.trackingLink}</span>
                                 </div>
-                            </div>
-                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">
-                                <QrCode className="w-24 h-24 text-slate-300 mb-2" />
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Tracking QR Code</span>
                             </div>
                         </div>
                     </section>
@@ -196,7 +187,7 @@ export default function ActivePromotionPage() {
                     <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
                         <h3 className="text-lg font-bold text-[#0F172A] mb-4">Download Banner</h3>
                         <p className="text-[#64748B] text-[14px] leading-relaxed mb-8">
-                            Download this banner and post it on your story. The platform has automatically added your unique tracking QR and watermark.
+                            Download this banner and post it on your story. The platform has automatically added your unique tracking link and watermark.
                         </p>
                         <button className="w-full py-4 bg-gradient-to-r from-[#38BDF8] to-[#1D4ED8] text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3">
                             <Download className="w-6 h-6" />
@@ -205,7 +196,6 @@ export default function ActivePromotionPage() {
                         <div className="mt-6 space-y-3">
                             {[
                                 "Platform watermark included",
-                                "Tracking QR code embedded",
                                 "Optimized for Story format"
                             ].map((item, id) => (
                                 <div key={id} className="flex items-center gap-2 text-[12px] font-medium text-slate-500">
@@ -256,8 +246,7 @@ export default function ActivePromotionPage() {
                             {[
                                 "Post the banner on your social stories",
                                 "Keep the story live for full 24 hours",
-                                "Do not crop or modify the banner image",
-                                "Ensure the QR code is clearly visible"
+                                "Do not crop or modify the banner image"
                             ].map((guide, idx) => (
                                 <li key={idx} className="flex gap-2 text-[13px] text-slate-600 leading-tight">
                                     <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] shrink-0 mt-1.5" />

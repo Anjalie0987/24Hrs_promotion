@@ -14,7 +14,7 @@ export function Footer() {
                     <div className="lg:col-span-1">
                         <Link href="/" className="inline-block mb-6">
                             <Image
-                                src="/24HR_logo.jpg"
+                                src="/24HR_logo.png"
                                 alt="24HR Status Promotion Logo"
                                 width={48}
                                 height={48}

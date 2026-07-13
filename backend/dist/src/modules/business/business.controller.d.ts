@@ -1,3 +1,4 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import { BusinessService } from './business.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
@@ -9,11 +10,14 @@ export declare class BusinessController {
     uploadImage(file: Express.Multer.File): Promise<{
         secure_url: string;
     }>;
-    create(req: any, dto: CreateBusinessDto): Promise<{
+    create(req: AuthenticatedRequest, dto: CreateBusinessDto, files?: {
+        logo?: Express.Multer.File[];
+        ownerPhoto?: Express.Multer.File[];
+    }): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -21,19 +25,23 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
-    findMe(req: any): Promise<{
+    findMe(req: AuthenticatedRequest): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -41,19 +49,26 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
-    update(req: any, dto: UpdateBusinessDto): Promise<{
+    update(req: AuthenticatedRequest, dto: UpdateBusinessDto, files?: {
+        logo?: Express.Multer.File[];
+        ownerPhoto?: Express.Multer.File[];
+    }): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -61,15 +76,19 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
-    getRecommended(req: any): Promise<{
+    getRecommended(req: AuthenticatedRequest): Promise<{
         matchScore: number;
         matchReason: string;
         banners: {
@@ -81,10 +100,10 @@ export declare class BusinessController {
             title: string | null;
             businessId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -92,20 +111,24 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }[]>;
-    findAllAlias(req: any, query: any): Promise<{
+    findAllAlias(req: AuthenticatedRequest, query: Parameters<BusinessService['findAll']>[1]): Promise<{
         metrics: {
             completedPromotions: number;
             successRate: number;
         };
-        requestStatus: any;
+        requestStatus: string | null;
         banners: {
             id: string;
             createdAt: Date;
@@ -131,10 +154,10 @@ export declare class BusinessController {
             receiverBusinessId: string;
             bannerId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -142,15 +165,19 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }[]>;
-    getSavedPartners(req: any): Promise<({
+    getSavedPartners(req: AuthenticatedRequest): Promise<({
         banners: {
             id: string;
             createdAt: Date;
@@ -161,10 +188,10 @@ export declare class BusinessController {
             businessId: string;
         }[];
     } & {
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -172,20 +199,24 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     })[]>;
-    findAll(req: any, query: any): Promise<{
+    findAll(req: AuthenticatedRequest, query: Parameters<BusinessService['findAll']>[1]): Promise<{
         metrics: {
             completedPromotions: number;
             successRate: number;
         };
-        requestStatus: any;
+        requestStatus: string | null;
         banners: {
             id: string;
             createdAt: Date;
@@ -211,10 +242,10 @@ export declare class BusinessController {
             receiverBusinessId: string;
             bannerId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -222,22 +253,26 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }[]>;
-    savePartner(req: any, id: string): Promise<{
+    savePartner(req: AuthenticatedRequest, id: string): Promise<{
         id: string;
         createdAt: Date;
         userId: string;
         businessId: string;
     }>;
-    unsavePartner(req: any, id: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
-    getProfile(req: any, id: string): Promise<{
+    unsavePartner(req: AuthenticatedRequest, id: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
+    getProfile(req: AuthenticatedRequest, id: string): Promise<{
         metrics: {
             completedPromotions: number;
             successRate: number;
@@ -257,10 +292,10 @@ export declare class BusinessController {
                 businessId: string;
             }[];
         } & {
+            name: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             category: string;
             description: string | null;
             location: string | null;
@@ -268,18 +303,22 @@ export declare class BusinessController {
             whatsapp: string | null;
             logoUrl: string | null;
             bannerUrl: string | null;
+            bannerTemplate: string | null;
             trustScore: number;
             website: string | null;
             isVerified: boolean;
             city: string | null;
             state: string | null;
             isAvailable: boolean;
+            ownerName: string | null;
+            ownerPhotoUrl: string | null;
+            yearsExperience: number | null;
             userId: string;
         })[];
         recentActivity: any[];
         matchScore: number;
         matchReason: string;
-        requestStatus: any;
+        requestStatus: string | null;
         banners: {
             id: string;
             createdAt: Date;
@@ -289,10 +328,10 @@ export declare class BusinessController {
             title: string | null;
             businessId: string;
         }[];
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -300,19 +339,47 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
+        userId: string;
+    }>;
+    regenerateBanner(req: AuthenticatedRequest, id: string): Promise<{
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        category: string;
+        description: string | null;
+        location: string | null;
+        instagram: string | null;
+        whatsapp: string | null;
+        logoUrl: string | null;
+        bannerUrl: string | null;
+        bannerTemplate: string | null;
+        trustScore: number;
+        website: string | null;
+        isVerified: boolean;
+        city: string | null;
+        state: string | null;
+        isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
     findOne(id: string): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         category: string;
         description: string | null;
         location: string | null;
@@ -320,12 +387,16 @@ export declare class BusinessController {
         whatsapp: string | null;
         logoUrl: string | null;
         bannerUrl: string | null;
+        bannerTemplate: string | null;
         trustScore: number;
         website: string | null;
         isVerified: boolean;
         city: string | null;
         state: string | null;
         isAvailable: boolean;
+        ownerName: string | null;
+        ownerPhotoUrl: string | null;
+        yearsExperience: number | null;
         userId: string;
     }>;
 }

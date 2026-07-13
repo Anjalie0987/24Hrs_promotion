@@ -32,11 +32,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message:
-        typeof message === 'object'
-          ? (message as any).message || message
+        typeof message === 'object' && message !== null && 'message' in message
+          ? (message as { message: string }).message || message
           : message,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         `[${request.method}] ${request.url} - Error: ${

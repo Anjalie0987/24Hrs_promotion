@@ -107,8 +107,6 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
 
-
-
     const { password: rawPassword, ...userData } = data;
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 

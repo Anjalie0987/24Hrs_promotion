@@ -37,7 +37,7 @@ let DashboardService = class DashboardService {
         try {
             business = await this.businessService.findMe(userId);
         }
-        catch (e) {
+        catch {
             return { business: null };
         }
         if (!business) {

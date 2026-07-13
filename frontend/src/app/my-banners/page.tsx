@@ -30,6 +30,7 @@ export default function MyBannersPage() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [bannerTitle, setBannerTitle] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+    const [selectedBannerUrl, setSelectedBannerUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -147,6 +148,7 @@ export default function MyBannersPage() {
                             key={banner.id} 
                             banner={banner} 
                             onDelete={(id) => setShowDeleteModal(id)} 
+                            onView={(url) => setSelectedBannerUrl(url)}
                         />
                     ))}
                 </div>
@@ -181,7 +183,7 @@ export default function MyBannersPage() {
                                 <div 
                                     onClick={() => fileInputRef.current?.click()}
                                     className={cn(
-                                        "relative aspect-[9/16] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden",
+                                        "relative aspect-[16/9] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden",
                                         previewUrl ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-400 hover:bg-slate-50"
                                     )}
                                 >
@@ -193,13 +195,13 @@ export default function MyBannersPage() {
                                             </div>
                                         </>
                                     ) : (
-                                        <div className="text-center p-6">
-                                            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                <Upload className="w-8 h-8 text-blue-500" />
+                                            <div className="text-center p-6">
+                                                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <Upload className="w-8 h-8 text-blue-500" />
+                                                </div>
+                                                <p className="font-bold text-[#0F172A] mb-1">Click to upload</p>
+                                                <p className="text-xs text-slate-500">Horizontal (16:9) recommended</p>
                                             </div>
-                                            <p className="font-bold text-[#0F172A] mb-1">Click to upload</p>
-                                            <p className="text-xs text-slate-500">Vertical (9:16) recommended</p>
-                                        </div>
                                     )}
                                     <input 
                                         type="file" 
@@ -231,6 +233,40 @@ export default function MyBannersPage() {
                                     {isUploading ? "Uploading..." : "Upload Banner"}
                                 </button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Image Viewer Modal */}
+            <AnimatePresence>
+                {selectedBannerUrl && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedBannerUrl(null)}
+                            className="absolute inset-0 bg-black/90 backdrop-blur-md cursor-pointer"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="relative w-full max-w-5xl aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
+                        >
+                            <Image 
+                                src={selectedBannerUrl} 
+                                alt="Full Banner Preview" 
+                                fill 
+                                className="object-contain"
+                            />
+                            <button 
+                                onClick={() => setSelectedBannerUrl(null)}
+                                className="absolute top-4 right-4 w-12 h-12 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
                         </motion.div>
                     </div>
                 )}

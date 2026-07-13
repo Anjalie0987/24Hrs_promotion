@@ -1,3 +1,4 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import {
   Controller,
   Get,
@@ -18,7 +19,7 @@ export class NotificationsController {
 
   @Get()
   async getNotifications(
-    @Request() req,
+    @Request() req: AuthenticatedRequest,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
@@ -32,22 +33,28 @@ export class NotificationsController {
   }
 
   @Patch('read-all')
-  async markAllAsRead(@Request() req) {
+  async markAllAsRead(@Request() req: AuthenticatedRequest) {
     return this.notificationsService.markAllAsRead(req.user.userId);
   }
 
   @Patch(':id/read')
-  async markAsRead(@Param('id') id: string, @Request() req) {
+  async markAsRead(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.notificationsService.markAsRead(id, req.user.userId);
   }
 
   @Delete('read-all')
-  async deleteReadNotifications(@Request() req) {
+  async deleteReadNotifications(@Request() req: AuthenticatedRequest) {
     return this.notificationsService.deleteReadNotifications(req.user.userId);
   }
 
   @Delete(':id')
-  async deleteNotification(@Param('id') id: string, @Request() req) {
+  async deleteNotification(
+    @Param('id') id: string,
+    @Request() req: AuthenticatedRequest,
+  ) {
     return this.notificationsService.deleteNotification(id, req.user.userId);
   }
 }

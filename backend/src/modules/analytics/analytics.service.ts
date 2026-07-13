@@ -1,6 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
+export interface ChartData {
+  date: string;
+  clicks: number;
+  scans: number;
+}
+
+export interface TimelineEvent {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  date: Date;
+}
+
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -79,7 +93,7 @@ export class AnalyticsService {
     });
 
     // Group by Date (YYYY-MM-DD)
-    const groupedData: Record<string, any> = {};
+    const groupedData: Record<string, ChartData> = {};
 
     // Initialize all dates in range with 0
     for (let i = 0; i <= days; i++) {
@@ -158,7 +172,15 @@ export class AnalyticsService {
       },
     });
 
-    const partnerStats: Record<string, any> = {};
+    interface PartnerStat {
+      id: string;
+      name: string;
+      logoUrl: string | null;
+      totalPromotions: number;
+      completedPromotions: number;
+      totalClicks: number;
+    }
+    const partnerStats: Record<string, PartnerStat> = {};
 
     promotions.forEach((p) => {
       const partnerId = p.request.receiverBusiness.id;
@@ -278,8 +300,7 @@ export class AnalyticsService {
     });
 
     if (!business) return [];
-
-    const events: any[] = [];
+    const events: TimelineEvent[] = [];
 
     // 1. Profile Created
     events.push({

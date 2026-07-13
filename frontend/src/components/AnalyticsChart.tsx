@@ -32,18 +32,6 @@ export function AnalyticsChart({ data }: { data: any[] }) {
         >
           All
         </button>
-        <button 
-          onClick={() => setActiveMetric('clicks')}
-          className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${activeMetric === 'clicks' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-blue-50'}`}
-        >
-          Clicks
-        </button>
-        <button 
-          onClick={() => setActiveMetric('scans')}
-          className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${activeMetric === 'scans' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-emerald-50'}`}
-        >
-          QR Scans
-        </button>
       </div>
 
       <div className="w-full h-[350px]">
@@ -79,19 +67,6 @@ export function AnalyticsChart({ data }: { data: any[] }) {
                 name="Clicks"
                 dataKey="clicks" 
                 stroke="#2563EB" 
-                strokeWidth={3}
-                dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 6, strokeWidth: 0 }}
-                animationDuration={1000}
-              />
-            )}
-            
-            {(activeMetric === 'both' || activeMetric === 'scans') && (
-              <Line 
-                type="monotone" 
-                name="QR Scans"
-                dataKey="scans" 
-                stroke="#10B981" 
                 strokeWidth={3}
                 dot={{ r: 4, strokeWidth: 2 }}
                 activeDot={{ r: 6, strokeWidth: 0 }}

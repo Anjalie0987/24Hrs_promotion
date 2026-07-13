@@ -130,7 +130,6 @@ export default function DashboardPage() {
         { label: "Completed Promotions", value: overview?.completedPromotions || 0, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100" },
         { label: "Completion Rate", value: `${overview?.completionRate || 0}%`, icon: BarChart3, color: "text-purple-600", bg: "bg-purple-100" },
         { label: "Total Clicks", value: overview?.totalClicks || 0, icon: MousePointer2, color: "text-amber-600", bg: "bg-amber-100" },
-        { label: "Total QR Scans", value: overview?.totalQrScans || 0, icon: ScanLine, color: "text-teal-600", bg: "bg-teal-100" },
         { label: "Banner Downloads", value: overview?.totalBannerDownloads || 0, icon: DownloadCloud, color: "text-pink-600", bg: "bg-pink-100" },
         { label: "Trust Score", value: `${overview?.trustScore || 50}`, icon: ShieldCheck, color: "text-orange-600", bg: "bg-orange-100" },
     ];
@@ -255,7 +254,7 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h2 className="text-lg font-bold text-[#0F172A]">Engagement Overview</h2>
-                            <p className="text-sm text-[#64748B]">Clicks and QR scans over the last 30 days.</p>
+                            <p className="text-sm text-[#64748B]">Clicks over the last 30 days.</p>
                         </div>
                     </div>
                     <AnalyticsChart data={chartData} />

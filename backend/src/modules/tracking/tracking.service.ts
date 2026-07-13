@@ -14,7 +14,10 @@ export class TrackingService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  async trackClick(promotionId: string, reqInfo: any) {
+  async trackClick(
+    promotionId: string,
+    reqInfo: { userAgent?: string; ipAddress?: string | null },
+  ) {
     const promotion = await this.prisma.promotion.findUnique({
       where: { id: promotionId },
       include: {
@@ -59,7 +62,10 @@ export class TrackingService {
     return `${this.frontendUrl}/business/${sender.id}`;
   }
 
-  async trackQrScan(promotionId: string, reqInfo: any) {
+  async trackQrScan(
+    promotionId: string,
+    reqInfo: { userAgent?: string; ipAddress?: string | null },
+  ) {
     const promotion = await this.prisma.promotion.findUnique({
       where: { id: promotionId },
       include: {

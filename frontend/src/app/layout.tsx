@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "24H Promotion Admin",
   description: "Next-gen promotion management for businesses",
+  icons: {
+    icon: "/24HR_logo.png",
+  },
 };
 
 import { AuthProvider } from "@/context/auth-context";

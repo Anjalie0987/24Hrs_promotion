@@ -1,10 +1,11 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import { PromotionsService } from './promotions.service';
 import { BusinessService } from '../business/business.service';
 export declare class PromotionsController {
     private readonly promotionsService;
     private readonly businessService;
     constructor(promotionsService: PromotionsService, businessService: BusinessService);
-    findActive(req: any, skip?: string, take?: string): Promise<({
+    findActive(req: AuthenticatedRequest, skip?: string, take?: string): Promise<({
         request: {
             banner: {
                 id: string;
@@ -16,10 +17,10 @@ export declare class PromotionsController {
                 businessId: string;
             };
             senderBusiness: {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -27,19 +28,23 @@ export declare class PromotionsController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             };
             receiverBusiness: {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -47,12 +52,16 @@ export declare class PromotionsController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             };
         } & {
@@ -73,7 +82,7 @@ export declare class PromotionsController {
         senderProof: string | null;
         receiverProof: string | null;
     })[]>;
-    findCompleted(req: any, skip?: string, take?: string): Promise<({
+    findCompleted(req: AuthenticatedRequest, skip?: string, take?: string): Promise<({
         request: {
             banner: {
                 id: string;
@@ -85,10 +94,10 @@ export declare class PromotionsController {
                 businessId: string;
             };
             senderBusiness: {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -96,19 +105,23 @@ export declare class PromotionsController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             };
             receiverBusiness: {
+                name: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
                 category: string;
                 description: string | null;
                 location: string | null;
@@ -116,12 +129,16 @@ export declare class PromotionsController {
                 whatsapp: string | null;
                 logoUrl: string | null;
                 bannerUrl: string | null;
+                bannerTemplate: string | null;
                 trustScore: number;
                 website: string | null;
                 isVerified: boolean;
                 city: string | null;
                 state: string | null;
                 isAvailable: boolean;
+                ownerName: string | null;
+                ownerPhotoUrl: string | null;
+                yearsExperience: number | null;
                 userId: string;
             };
         } & {
@@ -142,7 +159,7 @@ export declare class PromotionsController {
         senderProof: string | null;
         receiverProof: string | null;
     })[]>;
-    uploadProof(req: any, dto: {
+    uploadProof(req: AuthenticatedRequest, dto: {
         promotionId: string;
         proofImageUrl: string;
     }): Promise<{

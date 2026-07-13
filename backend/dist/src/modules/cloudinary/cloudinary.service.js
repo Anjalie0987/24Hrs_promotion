@@ -37,6 +37,25 @@ let CloudinaryService = class CloudinaryService {
                 .end(file.buffer);
         });
     }
+    async uploadBuffer(buffer, folder = 'business-banners', publicId) {
+        return new Promise((resolve, reject) => {
+            cloudinary_1.v2.uploader
+                .upload_stream({
+                folder,
+                resource_type: 'auto',
+                public_id: publicId,
+                overwrite: true,
+            }, (error, result) => {
+                if (error)
+                    return reject(new common_1.InternalServerErrorException('Cloudinary Error: ' + error.message));
+                if (!result) {
+                    return reject(new common_1.InternalServerErrorException('Cloudinary Error: No result returned'));
+                }
+                resolve(result.secure_url);
+            })
+                .end(buffer);
+        });
+    }
     getWatermarkedUrl(publicId) {
         return cloudinary_1.v2.url(publicId, {
             transformation: [

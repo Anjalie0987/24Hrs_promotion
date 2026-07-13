@@ -1,3 +1,4 @@
+import type { AuthenticatedRequest } from '../../common/interfaces/authenticated-request.interface';
 import {
   Controller,
   Post,
@@ -23,7 +24,7 @@ export class RequestsController {
 
   @Post('send')
   async send(
-    @Req() req,
+    @Req() req: AuthenticatedRequest,
     @Body() data: { receiverBusinessId: string; bannerId: string },
   ) {
     const business = await this.businessService.findMe(req.user.userId);
@@ -31,26 +32,26 @@ export class RequestsController {
   }
 
   @Post('accept/:id')
-  async accept(@Req() req, @Param('id') id: string) {
+  async accept(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.accept(id, business.id);
   }
 
   @Post('reject/:id')
-  async reject(@Req() req, @Param('id') id: string) {
+  async reject(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.reject(id, business.id);
   }
 
   @Delete('cancel/:id')
-  async cancel(@Req() req, @Param('id') id: string) {
+  async cancel(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     const business = await this.businessService.findMe(req.user.userId);
     return this.requestsService.cancel(id, business.id);
   }
 
   @Get('incoming')
   async findIncoming(
-    @Req() req,
+    @Req() req: AuthenticatedRequest,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
@@ -64,7 +65,7 @@ export class RequestsController {
 
   @Get('sent')
   async findSent(
-    @Req() req,
+    @Req() req: AuthenticatedRequest,
     @Query('skip') skip?: string,
     @Query('take') take?: string,
   ) {
