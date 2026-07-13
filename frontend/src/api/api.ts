@@ -27,7 +27,11 @@ api.interceptors.response.use(
   (response) => response,
 
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (
+      error.response?.status === 401 ||
+      error.response?.status === 403 ||
+      (error.response?.status === 404 && error.config?.url === '/users/me')
+    ) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('access_token');
         localStorage.removeItem('user');

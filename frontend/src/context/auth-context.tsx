@@ -33,9 +33,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await api.get('/users/me');
       setUser(response.data);
     } catch (error: any) {
-      console.error("Failed to fetch user", error);
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
+      const status = error?.response?.status;
+      if (status === 401 || status === 403 || status === 404) {
         setUser(null);
+        setToken(null);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('user');
+        }
+      } else {
+        console.error("Failed to fetch user", error);
       }
       // On 429 or network errors, we preserve the user loaded from localStorage
     } finally {
