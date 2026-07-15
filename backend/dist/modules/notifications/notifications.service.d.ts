@@ -9,8 +9,8 @@ export declare class NotificationsService {
         createdAt: Date;
         type: string;
         userId: string;
-        title: string | null;
         message: string;
+        title: string | null;
         isRead: boolean;
     }>;
     getUserNotifications(userId: string, skip?: number, take?: number): Promise<{
@@ -19,8 +19,8 @@ export declare class NotificationsService {
             createdAt: Date;
             type: string;
             userId: string;
-            title: string | null;
             message: string;
+            title: string | null;
             isRead: boolean;
         }[];
         unreadCount: number;

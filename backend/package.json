@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anjalie0987/24Hrs_promotion.git"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

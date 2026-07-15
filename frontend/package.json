@@ -1,11 +1,16 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anjalie0987/24Hrs_promotion.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "start:prod": "next build && next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },

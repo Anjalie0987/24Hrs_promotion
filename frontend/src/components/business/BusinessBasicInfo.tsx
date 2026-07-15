@@ -99,7 +99,12 @@ export const BusinessBasicInfo: React.FC<BusinessBasicInfoProps> = React.memo(({
         </div>
 
         <div className="md:col-span-2">
-          <label className={labelClasses}>Business Description</label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-[14px] font-semibold text-[#111111]">Business Description</label>
+            <span className={`text-[12px] font-medium ${formData.description && formData.description.length > 250 ? 'text-red-500' : 'text-[#94A3B8]'}`}>
+              {(formData.description || '').length} / 250
+            </span>
+          </div>
           <div className="relative">
             <AlignLeft className="absolute left-4 top-4 w-4 h-4 text-[#94A3B8]" />
             <textarea
@@ -109,8 +114,10 @@ export const BusinessBasicInfo: React.FC<BusinessBasicInfoProps> = React.memo(({
               placeholder="Tell us about your business..."
               className={`${inputClasses} h-32 py-3 pl-11 resize-none`}
               disabled={disabled}
+              maxLength={250}
             />
           </div>
+          <ValidationMessage error={errors.description} />
         </div>
       </div>
     </div>

@@ -11,6 +11,10 @@ export function validateBusinessForm(data: BusinessData, logoFile: File | null, 
     errors.name = 'Business Name is required';
   }
 
+  if (data.description && data.description.length > 250) {
+    errors.description = 'Description cannot exceed 250 characters';
+  }
+
   if (!data.ownerName || data.ownerName.trim() === '') {
     errors.ownerName = 'Owner Name is required';
   }
