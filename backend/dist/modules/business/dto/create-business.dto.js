@@ -23,6 +23,7 @@ class CreateBusinessDto {
     ownerPhotoUrl;
     yearsExperience;
     website;
+    email;
 }
 exports.CreateBusinessDto = CreateBusinessDto;
 __decorate([
@@ -79,4 +80,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateBusinessDto.prototype, "website", void 0);
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateBusinessDto.prototype, "email", void 0);
 //# sourceMappingURL=create-business.dto.js.map

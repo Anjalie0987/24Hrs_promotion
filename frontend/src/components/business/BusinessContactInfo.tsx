@@ -53,6 +53,23 @@ export const BusinessContactInfo: React.FC<BusinessContactInfoProps> = React.mem
         </div>
 
         <div>
+          <label className={labelClasses}>Email Address</label>
+          <div className="relative">
+            <span className={iconClasses}>@</span>
+            <input
+              name="email"
+              type="email"
+              value={formData.email || ''}
+              onChange={onChange}
+              placeholder="e.g. contact@business.com"
+              className={`${inputClasses} ${errors.email ? 'border-red-500' : ''}`}
+              disabled={disabled}
+            />
+          </div>
+          <ValidationMessage error={errors.email} />
+        </div>
+
+        <div>
           <label className={labelClasses}>Instagram Username</label>
           <div className="relative">
             <Instagram className={iconClasses} />

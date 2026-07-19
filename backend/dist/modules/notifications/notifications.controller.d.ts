@@ -9,8 +9,8 @@ export declare class NotificationsController {
             createdAt: Date;
             type: string;
             userId: string;
-            message: string;
             title: string | null;
+            message: string;
             isRead: boolean;
         }[];
         unreadCount: number;

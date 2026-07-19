@@ -7,6 +7,7 @@ export interface BannerData {
     location?: string;
     whatsapp?: string;
     website?: string;
+    email?: string;
     yearsExperience?: number;
     logoUrl?: string;
     ownerPhotoUrl?: string;

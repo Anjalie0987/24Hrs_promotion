@@ -23,6 +23,7 @@ export function buildBusinessFormData(
     'description',
     'location',
     'website',
+    'email',
     'whatsapp',
     'instagram',
     'yearsExperience',

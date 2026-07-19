@@ -25,6 +25,7 @@ export declare class DashboardService {
         business: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -68,6 +69,7 @@ export declare class DashboardService {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -111,6 +113,7 @@ export declare class DashboardService {
                 senderBusiness: {
                     name: string;
                     id: string;
+                    email: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     category: string;
@@ -135,6 +138,7 @@ export declare class DashboardService {
                 receiverBusiness: {
                     name: string;
                     id: string;
+                    email: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     category: string;

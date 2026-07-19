@@ -61,6 +61,7 @@ let BusinessService = class BusinessService {
                 location: createdBusiness.location || undefined,
                 whatsapp: createdBusiness.whatsapp || undefined,
                 website: createdBusiness.website || undefined,
+                email: createdBusiness.email || undefined,
                 yearsExperience: createdBusiness.yearsExperience || undefined,
                 logoUrl: createdBusiness.logoUrl || undefined,
                 ownerPhotoUrl: createdBusiness.ownerPhotoUrl || undefined,
@@ -105,6 +106,7 @@ let BusinessService = class BusinessService {
                 location: business.location || undefined,
                 whatsapp: business.whatsapp || undefined,
                 website: business.website || undefined,
+                email: business.email || undefined,
                 yearsExperience: business.yearsExperience || undefined,
                 logoUrl: business.logoUrl || undefined,
                 ownerPhotoUrl: business.ownerPhotoUrl || undefined,
@@ -127,7 +129,7 @@ let BusinessService = class BusinessService {
         }
         catch (error) {
             console.error('Failed to regenerate banner:', error);
-            throw new common_1.InternalServerErrorException('Failed to regenerate banner image');
+            throw new common_1.InternalServerErrorException('Failed to generate business banner', error instanceof Error ? error.message : String(error));
         }
     }
     async findMe(userId) {

@@ -80,6 +80,7 @@ export class BusinessService {
           location: createdBusiness.location || undefined,
           whatsapp: createdBusiness.whatsapp || undefined,
           website: createdBusiness.website || undefined,
+          email: (createdBusiness as any).email || undefined,
           yearsExperience: createdBusiness.yearsExperience || undefined,
           logoUrl: createdBusiness.logoUrl || undefined,
           ownerPhotoUrl: createdBusiness.ownerPhotoUrl || undefined,
@@ -147,6 +148,7 @@ export class BusinessService {
           location: business.location || undefined,
           whatsapp: business.whatsapp || undefined,
           website: business.website || undefined,
+          email: (business as any).email || undefined,
           yearsExperience: business.yearsExperience || undefined,
           logoUrl: business.logoUrl || undefined,
           ownerPhotoUrl: business.ownerPhotoUrl || undefined,
@@ -180,7 +182,8 @@ export class BusinessService {
     } catch (error) {
       console.error('Failed to regenerate banner:', error);
       throw new InternalServerErrorException(
-        'Failed to regenerate banner image',
+        'Failed to generate business banner',
+        (error as any) instanceof Error ? (error as any).message : String(error),
       );
     }
   }
@@ -256,7 +259,7 @@ export class BusinessService {
 
     // Preserve existing bannerUrl by not overwriting it
     if ('bannerUrl' in dataToUpdate) {
-      delete (dataToUpdate as { bannerUrl?: string }).bannerUrl;
+      delete (dataToUpdate as any).bannerUrl;
     }
 
     await this.prisma.business.update({

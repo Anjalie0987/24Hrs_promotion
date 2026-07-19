@@ -46,6 +46,13 @@ export function validateBusinessForm(data: BusinessData, logoFile: File | null, 
     }
   }
 
+  if (data.email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      errors.email = 'Invalid email address';
+    }
+  }
+
   if (data.yearsExperience) {
     const exp = Number(data.yearsExperience);
     if (!Number.isInteger(exp) || exp < 0) {

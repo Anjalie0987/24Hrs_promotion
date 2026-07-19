@@ -17,6 +17,7 @@ export declare class UsersController {
         } & {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -61,6 +62,7 @@ export declare class UsersController {
         } & {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;

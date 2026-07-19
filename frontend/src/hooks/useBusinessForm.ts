@@ -16,6 +16,7 @@ export function useBusinessForm(initialData?: BusinessData | null, isEditMode = 
     instagram: initialData?.instagram || '',
     whatsapp: initialData?.whatsapp || '',
     website: initialData?.website || '',
+    email: initialData?.email || '',
     yearsExperience: initialData?.yearsExperience || undefined,
     logoUrl: initialData?.logoUrl || initialData?.logo || '',
     ownerPhotoUrl: initialData?.ownerPhotoUrl || '',

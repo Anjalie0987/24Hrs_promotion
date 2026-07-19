@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { X, LayoutDashboard, Megaphone, BarChart3, Trophy, Home, Info, Tag } from "lucide-react";
+import { X, LayoutDashboard, Megaphone, BarChart3, Trophy, Home, Info, Tag, Store, Image as ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -17,9 +17,10 @@ export function MobileDrawer({ isOpen, onClose, isLoggedIn, onLogout }: MobileDr
 
     const privateLinks = [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Promotions", href: "/promotions", icon: Megaphone },
+        { name: "Find Businesses", href: "/businesses", icon: Store },
+        { name: "Promotion Requests", href: "/promotion-requests", icon: Megaphone },
+        { name: "My Banners", href: "/my-banners", icon: ImageIcon },
         { name: "Analytics", href: "/analytics", icon: BarChart3 },
-        { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     ];
 
     const navigation = isLoggedIn ? privateLinks : publicLinks;

@@ -19,6 +19,7 @@ export declare class PromotionsController {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -43,6 +44,7 @@ export declare class PromotionsController {
             receiverBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -96,6 +98,7 @@ export declare class PromotionsController {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -120,6 +123,7 @@ export declare class PromotionsController {
             receiverBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;

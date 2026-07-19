@@ -15,6 +15,7 @@ export declare class BusinessService {
     }): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -39,6 +40,7 @@ export declare class BusinessService {
     regenerateBanner(userId: string, businessId: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -63,6 +65,7 @@ export declare class BusinessService {
     findMe(userId: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -87,6 +90,7 @@ export declare class BusinessService {
     findOne(id: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -114,6 +118,7 @@ export declare class BusinessService {
     }): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -179,6 +184,7 @@ export declare class BusinessService {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -203,6 +209,7 @@ export declare class BusinessService {
     incrementTrustScore(id: string, amount: number): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -238,6 +245,7 @@ export declare class BusinessService {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -279,6 +287,7 @@ export declare class BusinessService {
     } & {
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -322,6 +331,7 @@ export declare class BusinessService {
         } & {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -358,6 +368,7 @@ export declare class BusinessService {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;

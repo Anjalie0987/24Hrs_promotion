@@ -10,4 +10,5 @@ export declare class CreateBusinessDto {
     ownerPhotoUrl?: string;
     yearsExperience?: number;
     website?: string;
+    email?: string;
 }

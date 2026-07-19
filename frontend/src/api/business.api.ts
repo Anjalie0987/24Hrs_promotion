@@ -10,6 +10,7 @@ export interface BusinessData {
   instagram?: string;
   whatsapp?: string;
   website?: string;
+  email?: string;
   yearsExperience?: number;
   logo?: string;
   logoUrl?: string;

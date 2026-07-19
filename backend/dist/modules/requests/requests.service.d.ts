@@ -23,6 +23,7 @@ export declare class RequestsService {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -47,6 +48,7 @@ export declare class RequestsService {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -80,6 +82,7 @@ export declare class RequestsService {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -104,6 +107,7 @@ export declare class RequestsService {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -137,6 +141,7 @@ export declare class RequestsService {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -187,6 +192,7 @@ export declare class RequestsService {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -229,6 +235,7 @@ export declare class RequestsService {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;

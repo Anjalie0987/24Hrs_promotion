@@ -21,6 +21,7 @@ export declare class RequestsController {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -45,6 +46,7 @@ export declare class RequestsController {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -78,6 +80,7 @@ export declare class RequestsController {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -102,6 +105,7 @@ export declare class RequestsController {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -135,6 +139,7 @@ export declare class RequestsController {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -185,6 +190,7 @@ export declare class RequestsController {
         senderBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -227,6 +233,7 @@ export declare class RequestsController {
         receiverBusiness: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;

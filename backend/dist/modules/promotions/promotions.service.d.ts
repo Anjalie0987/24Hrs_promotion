@@ -30,6 +30,7 @@ export declare class PromotionsService {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -54,6 +55,7 @@ export declare class PromotionsService {
             receiverBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -107,6 +109,7 @@ export declare class PromotionsService {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -131,6 +134,7 @@ export declare class PromotionsService {
             receiverBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;

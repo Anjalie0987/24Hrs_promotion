@@ -16,6 +16,7 @@ export declare class DashboardController {
         business: {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -59,6 +60,7 @@ export declare class DashboardController {
             senderBusiness: {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;
@@ -102,6 +104,7 @@ export declare class DashboardController {
                 senderBusiness: {
                     name: string;
                     id: string;
+                    email: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     category: string;
@@ -126,6 +129,7 @@ export declare class DashboardController {
                 receiverBusiness: {
                     name: string;
                     id: string;
+                    email: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     category: string;

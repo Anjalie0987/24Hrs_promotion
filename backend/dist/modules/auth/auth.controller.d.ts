@@ -51,6 +51,7 @@ export declare class AuthController {
             } & {
                 name: string;
                 id: string;
+                email: string | null;
                 createdAt: Date;
                 updatedAt: Date;
                 category: string;

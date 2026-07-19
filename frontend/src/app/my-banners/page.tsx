@@ -112,13 +112,6 @@ export default function MyBannersPage() {
                     <h1 className="text-3xl font-bold text-[#0F172A] mb-2">My Promotion Banners</h1>
                     <p className="text-[#64748B] text-lg">Manage your business content and track performance.</p>
                 </div>
-                <button
-                    onClick={() => setShowUploadModal(true)}
-                    className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#2563EB] text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all shrink-0"
-                >
-                    <Plus className="w-5 h-5" />
-                    Upload New Banner
-                </button>
             </div>
 
             {/* Banners Grid */}
@@ -132,14 +125,7 @@ export default function MyBannersPage() {
                         <ImageIcon className="w-10 h-10" />
                     </div>
                     <h3 className="text-xl font-bold text-[#0F172A] mb-2">No banners yet</h3>
-                    <p className="text-slate-500 max-w-sm mx-auto mb-8">Upload your first vertical story banner to start promoting.</p>
-                    <button
-                        onClick={() => setShowUploadModal(true)}
-                        className="px-8 py-3 bg-[#0F172A] text-white font-bold rounded-xl shadow-lg hover:bg-black transition-all flex items-center gap-2"
-                    >
-                        <PlusCircle className="w-5 h-5" />
-                        Upload First Banner
-                    </button>
+                    <p className="text-slate-500 max-w-sm mx-auto mb-8">Your auto-generated banners will appear here.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

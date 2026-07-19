@@ -44,6 +44,7 @@ export const BusinessPreview: React.FC<BusinessPreviewProps> = React.memo(({
         <div className="space-y-2 text-sm text-gray-600">
           {formData.location && <p>📍 {formData.location}</p>}
           {formData.whatsapp && <p>💬 {formData.whatsapp}</p>}
+          {formData.email && <p>✉️ {formData.email}</p>}
           {formData.website && <p>🌐 {formData.website}</p>}
         </div>
       </div>

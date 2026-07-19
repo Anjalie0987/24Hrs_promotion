@@ -16,6 +16,7 @@ export declare class BusinessController {
     }): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -40,6 +41,7 @@ export declare class BusinessController {
     findMe(req: AuthenticatedRequest): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -67,6 +69,7 @@ export declare class BusinessController {
     }): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -102,6 +105,7 @@ export declare class BusinessController {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -156,6 +160,7 @@ export declare class BusinessController {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -190,6 +195,7 @@ export declare class BusinessController {
     } & {
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -244,6 +250,7 @@ export declare class BusinessController {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -294,6 +301,7 @@ export declare class BusinessController {
         } & {
             name: string;
             id: string;
+            email: string | null;
             createdAt: Date;
             updatedAt: Date;
             category: string;
@@ -330,6 +338,7 @@ export declare class BusinessController {
         }[];
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -354,6 +363,7 @@ export declare class BusinessController {
     regenerateBanner(req: AuthenticatedRequest, id: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;
@@ -378,6 +388,7 @@ export declare class BusinessController {
     findOne(id: string): Promise<{
         name: string;
         id: string;
+        email: string | null;
         createdAt: Date;
         updatedAt: Date;
         category: string;

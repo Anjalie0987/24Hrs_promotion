@@ -19,6 +19,9 @@ let PrismaService = class PrismaService extends client_1.PrismaClient {
     constructor() {
         const pool = new pg_1.Pool({
             connectionString: process.env.DATABASE_URL,
+            connectionTimeoutMillis: 20000,
+            idleTimeoutMillis: 10000,
+            max: 10,
         });
         const adapter = new adapter_pg_1.PrismaPg(pool);
         super({ adapter });

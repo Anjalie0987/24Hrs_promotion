@@ -64,6 +64,7 @@ model Business {
   bannerTemplate  String?  @default("corporate")
   trustScore      Int      @default(50)
   website     String?
+  email       String?
   isVerified  Boolean  @default(false)
   city        String?
   state       String?
@@ -119,7 +120,7 @@ model PromotionRequest {
 
   senderBusiness      Business @relation("Sender", fields: [senderBusinessId], references: [id])
   receiverBusiness    Business @relation("Receiver", fields: [receiverBusinessId], references: [id])
-  banner              Banner   @relation(fields: [bannerId], references: [id])
+  banner              Banner   @relation(fields: [bannerId], references: [id], onDelete: Cascade)
   
   promotion           Promotion?
 
